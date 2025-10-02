@@ -1,4 +1,4 @@
 export interface DefaultResponse {
   message: string;
-  user_id: string;
+  id: string;
 }
