@@ -1,16 +1,20 @@
 import { Optional } from 'sequelize';
 import {
+  BelongsTo,
   Column,
   DataType,
+  Default,
+  ForeignKey,
   Model,
   PrimaryKey,
   Table,
   Unique,
 } from 'sequelize-typescript';
+import { Role } from 'src/common/entities/role.entity';
 
 export enum UserRole {
   CLIENT = 1,
-  DEV,
+  DEVELOPER = 2,
 }
 
 interface UserAttributes {
@@ -19,7 +23,7 @@ interface UserAttributes {
   lastName: string;
   email: string;
   password: string;
-  role: UserRole;
+  roleId: UserRole;
   active: boolean;
 }
 
@@ -30,10 +34,8 @@ export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'active'>;
 })
 export class User extends Model<UserAttributes, UserCreationAttributes> {
   @PrimaryKey
-  @Column({
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-  })
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
   declare id: string;
 
   @Column
@@ -49,11 +51,15 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column
   password!: string;
 
-  @Column
-  role!: UserRole;
 
-  @Column({
-    defaultValue: true,
-  })
+  @ForeignKey(() => Role)
+  @Column
+  roleId!: number;
+
+  @BelongsTo(() => Role)
+  role!: Role;
+
+  @Default(true)
+  @Column
   active!: boolean;
 }
