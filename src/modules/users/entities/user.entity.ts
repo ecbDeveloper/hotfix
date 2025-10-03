@@ -1,6 +1,7 @@
 import { Optional } from 'sequelize';
 import {
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   Default,
@@ -10,7 +11,9 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
+import { Language } from 'src/common/entities/language.entity';
 import { Role } from 'src/common/entities/role.entity';
+import { UserLanguage } from 'src/common/entities/user-language.entity';
 
 export enum UserRole {
   CLIENT = 1,
@@ -51,15 +54,17 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column
   password!: string;
 
+  @Default(true)
+  @Column
+  active!: boolean;
 
   @ForeignKey(() => Role)
   @Column
-  roleId!: number;
+
 
   @BelongsTo(() => Role)
   role!: Role;
 
-  @Default(true)
-  @Column
-  active!: boolean;
+  @BelongsToMany(() => Language, () => UserLanguage)
+  languages: Language[]
 }

@@ -20,14 +20,16 @@ export class AuthService {
   ) { }
 
   async signup(signUpDto: SignupDto): Promise<DefaultResponse> {
-    const user = await this.usersService.findOneByEmail(signUpDto.email);
+    const { languages, ...userData } = signUpDto;
+
+    const user = await this.usersService.findOneByEmail(userData.email);
     if (user) {
       throw new ConflictException('email is already in use');
     }
 
     let hashedPassword: string;
     try {
-      hashedPassword = await brcrypt.hash(signUpDto.password, 10);
+      hashedPassword = await brcrypt.hash(userData.password, 10);
     } catch (error) {
       console.error('failed to hash password: ', error);
       throw new InternalServerErrorException(
@@ -35,10 +37,12 @@ export class AuthService {
       );
     }
 
-    const { id } = await this.usersService.create({
-      ...signUpDto,
+    const id = await this.usersService.create({
+      ...userData,
       password: hashedPassword,
     });
+
+    await this.usersService.insertLanguages(id, languages)
 
     return { message: 'user created successfully', id };
   }

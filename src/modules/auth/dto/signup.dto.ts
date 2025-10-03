@@ -1,6 +1,9 @@
 import {
+  ArrayMinSize,
+  IsArray,
   IsEmail,
   IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -27,4 +30,9 @@ export class SignupDto {
   @IsNotEmpty()
   @IsIn([UserRole.CLIENT, UserRole.DEVELOPER], { message: "role must be 1 (Client) or 2 (Developer)" })
   roleId: UserRole;
+
+  @IsArray()
+  @IsInt({ each: true })
+  @ArrayMinSize(1)
+  languages: number[]
 }
