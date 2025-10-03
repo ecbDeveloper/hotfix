@@ -60,7 +60,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @ForeignKey(() => Role)
   @Column
-
+  roleId: number;
 
   @BelongsTo(() => Role)
   role!: Role;
