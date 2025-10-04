@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateReviewRequestDto } from './dto/create-review-request.dto';
-import { UpdateReviewRequestDto } from './dto/update-review-request.dto';
+import { ReviewRequestRepository } from './review-request.repository';
 
 @Injectable()
 export class ReviewRequestService {
+  constructor(private readonly reviewResquestRepository: ReviewRequestRepository) { }
+
   create(createReviewRequestDto: CreateReviewRequestDto) {
     return 'This action adds a new reviewRequest';
   }
@@ -14,10 +16,6 @@ export class ReviewRequestService {
 
   findOne(id: number) {
     return `This action returns a #${id} reviewRequest`;
-  }
-
-  update(id: number, updateReviewRequestDto: UpdateReviewRequestDto) {
-    return `This action updates a #${id} reviewRequest`;
   }
 
   remove(id: number) {
