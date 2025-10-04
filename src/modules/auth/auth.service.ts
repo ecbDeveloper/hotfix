@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
 import * as brcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
-import { LoginResponse } from './dto/loginResponse.dto';
+import { LoginResponse } from './dto/login-response.dto';
 import { UsersService } from '../users/users.service';
 import { DefaultResponse } from 'src/common/dto/default-response.dto';
 
