@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { UserCreateInput } from './users.type';
 
@@ -26,7 +25,12 @@ export class UsersService {
     return
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findOneById(userId: string) {
+    const user = await this.usersRepository.findOneById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user;
   }
 }

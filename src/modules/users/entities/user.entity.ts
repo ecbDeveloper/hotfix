@@ -34,6 +34,7 @@ export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'active'>;
 
 @Table({
   tableName: 'users',
+  timestamps: true
 })
 export class User extends Model<UserAttributes, UserCreationAttributes> {
   @PrimaryKey
