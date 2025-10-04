@@ -3,7 +3,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsEmail,
-  IsIn,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -41,7 +41,7 @@ export class SignupDto {
 
   @IsNumber()
   @IsNotEmpty()
-  @IsIn([UserRole], { message: "role must be 1 (Client) or 2 (Developer)" })
+  @IsEnum(UserRole, { message: "role must be 1 (Client) or 2 (Developer)" })
   @ApiProperty({ enum: UserRole })
   roleId: UserRole;
 

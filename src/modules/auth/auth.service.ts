@@ -24,7 +24,7 @@ export class AuthService {
 
     const user = await this.usersService.findOneByEmail(userData.email);
     if (user) {
-      throw new ConflictException('email is already in use');
+      throw new ConflictException('Email is already in use');
     }
 
     let hashedPassword: string;
@@ -33,7 +33,7 @@ export class AuthService {
     } catch (error) {
       console.error('failed to hash password: ', error);
       throw new InternalServerErrorException(
-        'unexpected internal server error',
+        'Unexpected internal server error',
       );
     }
 
@@ -44,28 +44,27 @@ export class AuthService {
 
     await this.usersService.insertLanguages(id, languages)
 
-    return { message: 'user created successfully', id };
+    return { message: 'User created successfully', id };
   }
 
   async login(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.usersService.findOneByEmail(loginDto.email);
     if (!user) {
-      throw new UnauthorizedException('invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    const plainUser = user.get()
 
     const passwordMatches = await brcrypt.compare(
       loginDto.password,
-      plainUser.password,
+      user.password,
     );
     if (!passwordMatches) {
-      throw new UnauthorizedException('invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const tokenPayload = { sub: user.id };
     const token = await this.jwtService.signAsync(tokenPayload);
 
-    return { message: 'user logged successfully', token };
+    return { message: 'User logged successfully', token };
   }
 }
