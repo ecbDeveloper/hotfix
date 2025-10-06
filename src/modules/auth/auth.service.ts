@@ -11,6 +11,7 @@ import { LoginDto } from './dto/login.dto';
 import { LoginResponse } from './dto/login-response.dto';
 import { UsersService } from '../users/users.service';
 import { DefaultResponse } from 'src/common/dto/default-response.dto';
+import { DevStatuses, UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +38,10 @@ export class AuthService {
       );
     }
 
+    if (signUpDto.roleId == UserRole.DEVELOPER) {
+      userData.devStatusId = DevStatuses.RESTING
+    }
+
     const id = await this.usersService.create({
       ...userData,
       password: hashedPassword,
@@ -53,7 +58,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-
     const passwordMatches = await brcrypt.compare(
       loginDto.password,
       user.password,
@@ -65,6 +69,6 @@ export class AuthService {
     const tokenPayload = { sub: user.id };
     const token = await this.jwtService.signAsync(tokenPayload);
 
-    return { message: 'User logged successfully', token };
+    return { message: 'User logged successfully', token, userId: user.id };
   }
 }
