@@ -11,6 +11,7 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
+import { DevStatus } from 'src/common/entities/dev-status.entity';
 import { Language } from 'src/common/entities/language.entity';
 import { Role } from 'src/common/entities/role.entity';
 import { UserLanguage } from 'src/common/entities/user-language.entity';
@@ -18,6 +19,11 @@ import { UserLanguage } from 'src/common/entities/user-language.entity';
 export enum UserRole {
   CLIENT = 1,
   DEVELOPER = 2,
+}
+
+export enum DevStatuses {
+  RESTING = 1,
+  WORKING = 2,
 }
 
 interface UserAttributes {
@@ -28,9 +34,10 @@ interface UserAttributes {
   password: string;
   roleId: UserRole;
   active: boolean;
+  devStatusId: number;
 }
 
-export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'active'>;
+export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'active' | 'devStatusId'>;
 
 @Table({
   tableName: 'users',
@@ -61,10 +68,17 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @ForeignKey(() => Role)
   @Column
-  roleId: number;
+  roleId: UserRole;
 
   @BelongsTo(() => Role)
   role!: Role;
+
+  @ForeignKey(() => DevStatus)
+  @Column
+  devStatusId: DevStatuses;
+
+  @BelongsTo(() => DevStatus)
+  devStatus!: DevStatuses;
 
   @BelongsToMany(() => Language, () => UserLanguage)
   languages: Language[]
