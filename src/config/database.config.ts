@@ -4,6 +4,10 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { Role } from 'src/common/entities/role.entity';
 import { Language } from 'src/common/entities/language.entity';
 import { UserLanguage } from 'src/common/entities/user-language.entity';
+import { ReviewRequest } from 'src/modules/review-request/entities/review-request.entity';
+import { ReviewStatus } from 'src/common/entities/review-status.entity';
+import { PaymentMethods } from 'src/common/entities/payment-method.entity';
+import { DevStatus } from 'src/common/entities/dev-status.entity';
 
 dotenv.config();
 
@@ -14,7 +18,7 @@ export const db = new Sequelize({
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  models: [User, Role, Language, UserLanguage],
+  models: [User, Role, Language, UserLanguage, ReviewRequest, ReviewStatus, PaymentMethods, DevStatus],
   define: {
     underscored: true,
   },

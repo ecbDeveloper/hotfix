@@ -3,7 +3,7 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('users_languages', table => {
-    table.uuid('user_id').primary();
+    table.uuid('user_id');
     table.integer('language').unsigned();
 
     table.foreign('user_id').references('users.id');
