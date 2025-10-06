@@ -5,5 +5,8 @@ export class LoginResponse {
   message: string;
 
   @ApiProperty()
+  userId: string;
+
+  @ApiProperty()
   token: string;
 }

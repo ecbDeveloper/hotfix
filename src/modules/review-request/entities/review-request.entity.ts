@@ -10,7 +10,9 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Language } from 'src/common/entities/language.entity';
+import { PaymentMethods } from 'src/common/entities/payment-method.entity';
 import { ReviewStatus } from 'src/common/entities/review-status.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 export enum ReviewRequestStatus {
   OPEN = 1,
@@ -19,17 +21,24 @@ export enum ReviewRequestStatus {
   CANCELLED = 4,
 }
 
+export enum Payments {
+  PIX = 1,
+  CREDIT_CARD = 2,
+}
+
 interface ReviewRequestAttributes {
   id: string;
+  userId: string;
   price: number;
   title: string;
   description: string;
   codeSnippet: string;
-  status: number;
+  status: ReviewRequestStatus;
   language: number;
+  paymentMethod: Payments;
 }
 
-export type ReviewRequestCreationAttributes = Optional<ReviewRequestAttributes, 'id'>;
+export type ReviewRequestCreationAttributes = Optional<ReviewRequestAttributes, 'id' | 'status'>;
 
 @Table({ tableName: 'review_request', timestamps: true })
 export class ReviewRequest extends Model<ReviewRequestAttributes, ReviewRequestCreationAttributes> {
@@ -52,15 +61,29 @@ export class ReviewRequest extends Model<ReviewRequestAttributes, ReviewRequestC
 
   @ForeignKey(() => ReviewStatus)
   @Column
-  status!: number;
+  status!: ReviewRequestStatus;
 
   @ForeignKey(() => Language)
   @Column
   language!: number;
+
+  @ForeignKey(() => PaymentMethods)
+  @Column
+  paymentMethod!: Payments;
+
+  @ForeignKey(() => User)
+  @Column
+  userId!: string;
 
   @BelongsTo(() => ReviewStatus)
   reviewStatus!: ReviewStatus;
 
   @BelongsTo(() => Language)
   languageEntity!: Language;
+
+  @BelongsTo(() => PaymentMethods)
+  paymentMethodEntity!: PaymentMethods;
+
+  @BelongsTo(() => User)
+  user!: User;
 }
