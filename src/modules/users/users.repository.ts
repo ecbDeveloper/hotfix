@@ -8,8 +8,7 @@ import { UserLanguage } from 'src/common/entities/user-language.entity';
 export class UsersRepository {
   async findOneByEmail(email: string) {
     const user = await User.findOne({
-      where: { email: email },
-      attributes: { exclude: ['password'] },
+      where: { email: email, active: true },
       raw: true
     });
 
@@ -18,7 +17,7 @@ export class UsersRepository {
 
   async findOneById(userId: string) {
     const user = await User.findOne({
-      where: { id: userId },
+      where: { id: userId, active: true },
       attributes: { exclude: ['password'] },
       raw: true
     });
@@ -42,5 +41,12 @@ export class UsersRepository {
     ))
 
     await UserLanguage.bulkCreate(records)
+  }
+
+  async updateDevStatus(userId: string, status: number) {
+    await User.update({ devStatusId: status }, {
+      where: { id: userId }
+    })
+
   }
 } 
