@@ -54,7 +54,6 @@ export class SignupDto {
 
   @IsOptional()
   @IsNumber()
-  @IsEnum(DevStatuses, { message: "role must be 1 (Client) or 2 (Developer)" })
-  @ApiProperty({ enum: DevStatuses })
+  @IsEnum(DevStatuses)
   devStatusId?: DevStatuses
 }
