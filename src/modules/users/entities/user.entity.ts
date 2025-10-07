@@ -26,6 +26,7 @@ export enum UserRole {
 export enum DevStatuses {
   RESTING = 1,
   WORKING = 2,
+  ON_REVIEW = 3
 }
 
 interface UserAttributes {
