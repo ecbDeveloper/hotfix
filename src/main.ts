@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { db } from './config/database.config';
 import { SnakeToCamelInterceptor } from './common/interceptors/snake-to-camel.interceptor';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,8 +13,16 @@ async function bootstrap() {
     .setDescription('A platform connecting developers with expert reviewers for fast and reliable code corrections like Uber, but for code.')
     .setVersion('1.0')
     .build()
-  const docomentFactory = () => SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup('docs', app, docomentFactory())
+
+  const options: SwaggerDocumentOptions = {
+    operationIdFactory: (
+      controllerKey: string,
+      methodKey: string
+    ) => methodKey
+  };
+
+  const docomentFactory = () => SwaggerModule.createDocument(app, config, options)
+  SwaggerModule.setup('docs', app, docomentFactory)
 
   app.useGlobalInterceptors(new SnakeToCamelInterceptor());
 
