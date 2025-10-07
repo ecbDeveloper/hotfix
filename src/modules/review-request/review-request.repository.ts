@@ -11,6 +11,14 @@ export class ReviewRequestRepository {
     return reviewRequest.id
   }
 
+  async findOneByEmail(reviewId: string) {
+    return await ReviewRequest.findOne({
+      where: {
+        id: reviewId
+      }
+    })
+  }
+
   async findReviewRequestInProgressByUser(userId: string) {
     return await ReviewRequest.findOne({
       where: {
@@ -20,5 +28,12 @@ export class ReviewRequestRepository {
         }
       }
     })
+  }
+
+  async updateReviewRequestStatus(reviewId: string, status: number) {
+    return await ReviewRequest.update(
+      { status },
+      { where: { id: reviewId } },
+    );
   }
 }

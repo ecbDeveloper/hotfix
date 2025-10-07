@@ -6,6 +6,7 @@ import {
   DataType,
   Default,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
@@ -15,6 +16,7 @@ import { DevStatus } from 'src/common/entities/dev-status.entity';
 import { Language } from 'src/common/entities/language.entity';
 import { Role } from 'src/common/entities/role.entity';
 import { UserLanguage } from 'src/common/entities/user-language.entity';
+import { AcceptReview } from 'src/modules/accept-review/entities/accept-review.entity';
 
 export enum UserRole {
   CLIENT = 1,
@@ -82,4 +84,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @BelongsToMany(() => Language, () => UserLanguage)
   languages: Language[]
+
+  @HasMany(() => AcceptReview)
+  acceptedReviews: AcceptReview[];
 }

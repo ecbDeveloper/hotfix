@@ -35,11 +35,17 @@ export class ReviewRequestService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} reviewRequest`;
+  async findOneById(reviewId: string) {
+    const review = await this.reviewResquestRepository.findOneByEmail(reviewId)
+    if (!review) {
+      throw new NotFoundException('Review request not found')
+    }
+
+    return review
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} reviewRequest`;
+  async updateReviewRequestStatus(reviewId: string, status: number) {
+    return await this.reviewResquestRepository.updateReviewRequestStatus(reviewId, status)
   }
+
 }

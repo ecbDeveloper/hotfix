@@ -11,6 +11,7 @@ export class ReviewRequestGateway implements OnGatewayConnection, OnGatewayDisco
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) { }
+
   @WebSocketServer()
   server: Server
 

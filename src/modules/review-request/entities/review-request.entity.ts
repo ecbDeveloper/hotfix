@@ -5,6 +5,7 @@ import {
   DataType,
   Default,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
@@ -12,6 +13,7 @@ import {
 import { Language } from 'src/common/entities/language.entity';
 import { PaymentMethods } from 'src/common/entities/payment-method.entity';
 import { ReviewStatus } from 'src/common/entities/review-status.entity';
+import { AcceptReview } from 'src/modules/accept-review/entities/accept-review.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 
 export enum ReviewRequestStatus {
@@ -40,7 +42,7 @@ interface ReviewRequestAttributes {
 
 export type ReviewRequestCreationAttributes = Optional<ReviewRequestAttributes, 'id' | 'status'>;
 
-@Table({ tableName: 'review_request', timestamps: true })
+@Table({ tableName: 'review_requests', timestamps: true })
 export class ReviewRequest extends Model<ReviewRequestAttributes, ReviewRequestCreationAttributes> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -86,4 +88,10 @@ export class ReviewRequest extends Model<ReviewRequestAttributes, ReviewRequestC
 
   @BelongsTo(() => User)
   user!: User;
+
+  @BelongsTo(() => User)
+  dev!: User;
+
+  @HasMany(() => AcceptReview)
+  acceptedBy: AcceptReview[];
 }
