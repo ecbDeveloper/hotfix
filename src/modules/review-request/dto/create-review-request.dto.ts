@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsEnum, IsOptional, IsUUID } from 'class-validator';
 import { Payments } from '../entities/review-request.entity';
 
 export class CreateReviewRequestDto {
@@ -11,6 +11,7 @@ export class CreateReviewRequestDto {
   price: number;
 
   @IsOptional()
+  @IsUUID('4')
   userId: string;
 
   @ApiProperty({

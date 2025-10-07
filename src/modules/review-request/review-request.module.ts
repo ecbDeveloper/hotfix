@@ -9,6 +9,6 @@ import { ReviewRequestGateway } from './review-request.gateway';
   imports: [forwardRef(() => UsersModule)],
   controllers: [ReviewRequestController],
   providers: [ReviewRequestService, ReviewRequestRepository, ReviewRequestGateway],
-  exports: [ReviewRequestGateway]
+  exports: [ReviewRequestGateway, ReviewRequestService]
 })
 export class ReviewRequestModule { }
