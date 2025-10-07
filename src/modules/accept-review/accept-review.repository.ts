@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { CreateAcceptReviewDto } from "./dto/create-accept-review.dto";
+import { CreateAcceptReview } from "./dto/create-accept-review.dto";
 import { AcceptReview } from "./entities/accept-review.entity";
-import { UpdateAcceptReviewDto } from "./dto/update-accept-review.dto";
+import { UpdateAcceptReview } from "./dto/update-accept-review.dto";
 
 @Injectable()
 export class AcceptReviewRepository {
-  async create(createAcceptReviewDto: CreateAcceptReviewDto) {
-    return await AcceptReview.create(createAcceptReviewDto)
+  async create(createAcceptReview: CreateAcceptReview) {
+    return await AcceptReview.create(createAcceptReview)
   }
 
-  async updateAcceptReviewProgress(updateAcceptReviewDto: UpdateAcceptReviewDto) {
-    const { devId, reviewId, inProgress } = updateAcceptReviewDto
+  async updateAcceptReviewProgress(updateAcceptReview: UpdateAcceptReview) {
+    const { devId, reviewId, inProgress } = updateAcceptReview
     return await AcceptReview.update({ inProgress }, {
       where: { reviewId, devId }
     })
