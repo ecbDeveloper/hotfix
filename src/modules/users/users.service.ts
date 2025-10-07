@@ -40,7 +40,7 @@ export class UsersService {
     return user;
   }
 
-  async updateDevStatus(userId: string): Promise<DefaultResponse> {
+  async updateDevStatus(userId: string, devStatus: DevStatuses): Promise<DefaultResponse> {
     const user = await this.findOneById(userId)
     if (!user) {
       throw new NotFoundException('User not found')
@@ -50,11 +50,9 @@ export class UsersService {
       throw new UnprocessableEntityException('User must be a Dev to update your working status')
     }
 
-    const newStatus = user.devStatusId === DevStatuses.WORKING ? DevStatuses.RESTING : DevStatuses.WORKING;
+    await this.usersRepository.updateDevStatus(userId, devStatus)
 
-    await this.usersRepository.updateDevStatus(userId, newStatus)
-
-    if (newStatus === DevStatuses.WORKING) {
+    if (devStatus === DevStatuses.WORKING) {
       await this.reviewRequestsGateway.addToWorkRoom(userId)
     } else {
       await this.reviewRequestsGateway.removeFromWorkRoom(userId)
@@ -62,7 +60,7 @@ export class UsersService {
 
     return {
       id: userId,
-      message: `User is now ${DevStatuses[newStatus]}`
+      message: `User is now ${DevStatuses[devStatus]}`
     }
   }
 }

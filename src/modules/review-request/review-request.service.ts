@@ -17,7 +17,7 @@ export class ReviewRequestService {
   async create(createReviewRequestDto: CreateReviewRequestDto): Promise<DefaultResponse> {
     const userHasReviewInProgress = await this.reviewResquestRepository.findReviewRequestInProgressByUser(createReviewRequestDto.userId)
     if (userHasReviewInProgress) {
-      throw new ConflictException('You already an review in progess')
+      throw new ConflictException('You already have a review in progess')
     }
 
     const user = await this.usersService.findOneById(createReviewRequestDto.userId)
