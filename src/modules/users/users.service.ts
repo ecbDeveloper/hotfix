@@ -4,6 +4,9 @@ import { UserCreateInput } from './users.type';
 import { DevStatuses, UserRole } from './entities/user.entity';
 import { DefaultResponse } from 'src/common/dto/default-response.dto';
 import { ReviewRequestGateway } from '../review-request/review-request.gateway';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto } from './dto/response-user.dto';
+import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
 
 
 @Injectable()
@@ -61,6 +64,53 @@ export class UsersService {
     return {
       id: userId,
       message: `User is now ${DevStatuses[devStatus]}`
+    }
+  }
+
+  async findAll(limit: number, offset: number): Promise<PaginatedDto<UserResponseDto>> {
+    const { total, results } = await this.usersRepository.findAll(limit, offset)
+
+    const dtoResults = results.map(user => {
+      return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        roleId: user.roleId,
+        devStatusId: user.devStatusId,
+        languages: user.languages?.map(lang => lang.description),
+      } as UserResponseDto;
+    });
+
+    return {
+      limit,
+      offset,
+      total,
+      results: dtoResults,
+    }
+  }
+
+  async update(updateUserDto: UpdateUserDto): Promise<DefaultResponse> {
+    const [affectedRows] = await this.usersRepository.update(updateUserDto)
+    if (affectedRows === 0) {
+      throw new NotFoundException('User not found, or deactivate')
+    }
+
+    return {
+      id: updateUserDto.userId,
+      message: "User updated successfully"
+    }
+  }
+
+  async delete(userId: string): Promise<DefaultResponse> {
+    const [affectedRows] = await this.usersRepository.delete(userId)
+    if (affectedRows === 0) {
+      throw new NotFoundException('User not found, or deactivate')
+    }
+
+    return {
+      id: userId,
+      message: "User deleted successfully"
     }
   }
 }

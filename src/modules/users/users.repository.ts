@@ -2,6 +2,8 @@ import { User } from './entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { UserCreateInput } from './users.type';
 import { UserLanguage } from 'src/common/entities/user-language.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Language } from 'src/common/entities/language.entity';
 
 
 @Injectable()
@@ -18,6 +20,7 @@ export class UsersRepository {
   async findOneById(userId: string) {
     const user = await User.findOne({
       where: { id: userId, active: true },
+      include: Language,
       attributes: { exclude: ['password'] },
       raw: true
     });
@@ -45,8 +48,43 @@ export class UsersRepository {
 
   async updateDevStatus(userId: string, status: number) {
     await User.update({ devStatusId: status }, {
-      where: { id: userId }
+      where: {
+        id: userId,
+        active: true
+      }
+    })
+  }
+
+  async findAll(limit: number, offset: number) {
+    const { count, rows } = await User.findAndCountAll({
+      limit,
+      offset,
+      where: { active: true },
+      include: Language,
+      attributes: { exclude: ['password'] }
     })
 
+    return {
+      total: count,
+      results: rows
+    }
+  }
+
+  async update(updateUserDto: UpdateUserDto) {
+    return await User.update(updateUserDto, {
+      where: {
+        id: updateUserDto.userId,
+        active: true
+      }
+    })
+  }
+
+  async delete(userId: string) {
+    return await User.update({ active: false }, {
+      where: {
+        id: userId,
+        active: true
+      }
+    })
   }
 } 

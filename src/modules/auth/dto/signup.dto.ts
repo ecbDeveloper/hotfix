@@ -11,6 +11,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { Languages } from 'src/common/entities/language.entity';
 import { DevStatuses, UserRole } from 'src/modules/users/entities/user.entity';
 
 export class SignupDto {
@@ -49,6 +50,7 @@ export class SignupDto {
   @IsArray()
   @IsInt({ each: true })
   @ArrayMinSize(1)
+  @IsEnum(Languages)
   @ApiProperty({ type: [Number], example: [1, 3, 6], minItems: 1 })
   languages: number[]
 
