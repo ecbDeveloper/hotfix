@@ -11,7 +11,7 @@ export class ReviewRequestRepository {
     return reviewRequest.id
   }
 
-  async findOneByEmail(reviewId: string) {
+  async findOneById(reviewId: string) {
     return await ReviewRequest.findOne({
       where: {
         id: reviewId
@@ -35,5 +35,18 @@ export class ReviewRequestRepository {
       { status },
       { where: { id: reviewId } },
     );
+  }
+
+  async findAllByUserId(userId: string, limit: number, offset: number) {
+    const { count, rows } = await ReviewRequest.findAndCountAll({
+      limit,
+      offset,
+      where: { userId },
+    });
+
+    return {
+      total: count,
+      results: rows
+    }
   }
 }

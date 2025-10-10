@@ -10,7 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { Language } from 'src/common/entities/language.entity';
+import { Language, Languages } from 'src/common/entities/language.entity';
 import { PaymentMethods } from 'src/common/entities/payment-method.entity';
 import { ReviewStatus } from 'src/common/entities/review-status.entity';
 import { AcceptReview } from 'src/modules/accept-review/entities/accept-review.entity';
@@ -36,7 +36,7 @@ interface ReviewRequestAttributes {
   description: string;
   codeSnippet: string;
   status: ReviewRequestStatus;
-  language: number;
+  language: Languages;
   paymentMethod: Payments;
 }
 

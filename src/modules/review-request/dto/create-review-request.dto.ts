@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString, IsEnum, IsOptional, IsUUID } from 'class-validator';
 import { Payments } from '../entities/review-request.entity';
+import { Languages } from 'src/common/entities/language.entity';
 
 export class CreateReviewRequestDto {
   @ApiProperty({
@@ -36,11 +37,11 @@ export class CreateReviewRequestDto {
   codeSnippet: string;
 
   @ApiProperty({
-    example: 1,
+    example: Languages.GO,
   })
-  @IsNumber()
+  @IsEnum(Languages)
   @IsNotEmpty()
-  language: number;
+  language: Languages;
 
   @ApiProperty({
     example: Payments.PIX,
