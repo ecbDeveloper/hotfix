@@ -8,9 +8,10 @@ import { AuthService } from './modules/auth/auth.service';
 import { UsersController } from './modules/users/users.controller';
 import { ReviewRequestModule } from './modules/review-request/review-request.module';
 import { AcceptReviewModule } from './modules/accept-review/accept-review.module';
+import { SolutionReviewModule } from './modules/solution-review/solution-review.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, ReviewRequestModule, AcceptReviewModule],
+  imports: [UsersModule, AuthModule, ReviewRequestModule, AcceptReviewModule, SolutionReviewModule],
   controllers: [UsersController, AuthController],
   providers: [UsersService, UsersRepository, AuthService],
 })
