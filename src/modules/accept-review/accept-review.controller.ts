@@ -1,13 +1,14 @@
-import { Body, Controller, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { AcceptReviewService } from "./accept-review.service";
 import { CreateAcceptReviewDto, CreateAcceptReview } from "./dto/create-accept-review.dto";
-import { UpdateAcceptReview, UpdateAcceptReviewDto } from "./dto/update-accept-review.dto";
 import { CurrentUser } from "../auth/decorator/current-user.decorator";
 import { User } from "../users/entities/user.entity";
 import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
-import { AcceptReviewResponse } from "./dto/accept-review-response.dto";
-import type { Response } from "express";
+import { AcceptReviewDto, AcceptReviewResponseDto } from "./dto/accept-review-response.dto";
 import { JwtAuthGuard } from "../auth/guard/auth.guard";
+import { ReviewRequestStatus } from "../review-request/entities/review-request.entity";
+import type { Response } from "express";
+import { UpdateAcceptReviewDto } from "./dto/update-accept-review.dto";
 
 @Controller('accepts-reviews')
 export class AcceptReviewController {
@@ -18,7 +19,7 @@ export class AcceptReviewController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({
-    type: AcceptReviewResponse
+    type: AcceptReviewResponseDto
   })
   async create(
     @Body() createAcceptReviewDto: CreateAcceptReviewDto,
@@ -32,25 +33,40 @@ export class AcceptReviewController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':reviewId')
+  @Put(':reviewId/:devId')
   @ApiOkResponse({
-    type: AcceptReviewResponse
+    type: AcceptReviewResponseDto
   })
   async cancelReviewProgress(
     @Param('reviewId') reviewId: string,
-    @Body() updateAcceptReviewDto: UpdateAcceptReviewDto,
+    @Param('devId') devId: string,
     @CurrentUser() user: User,
     @Res() res: Response
   ) {
-    const updateAcceptReview: UpdateAcceptReview = {
-      devId: user.id,
-      reviewId: reviewId,
-      inProgress: updateAcceptReviewDto.inProgress,
-      reviewStatus: updateAcceptReviewDto.reviewStatus
+    const updateAcceptReview: UpdateAcceptReviewDto = {
+      devId,
+      reviewId,
+      userId: user.id,
+      inProgress: false,
+      reviewStatus: ReviewRequestStatus.OPEN
     }
 
     const response = await this.acceptReviewRequestService.cancelAcceptReview(updateAcceptReview)
 
     return res.status(200).json(response)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  @ApiOkResponse({
+    type: AcceptReviewDto
+  })
+  async findAllByDev(
+    @CurrentUser() user: User,
+    @Res() res: Response
+  ) {
+    const acceptsReviews = await this.acceptReviewRequestService.findAllByDev(user.id)
+
+    return res.status(200).json(acceptsReviews)
   }
 }

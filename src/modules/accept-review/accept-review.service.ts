@@ -1,13 +1,13 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { CreateAcceptReview } from './dto/create-accept-review.dto';
 import { AcceptReviewRepository } from './accept-review.repository';
 import { DevStatuses, UserRole } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { ReviewRequestService } from '../review-request/review-request.service';
-import { UpdateAcceptReview } from './dto/update-accept-review.dto';
 import { ReviewRequestStatus } from '../review-request/entities/review-request.entity';
-import { AcceptReviewResponse } from './dto/accept-review-response.dto';
 import { ReviewRequestGateway } from '../review-request/review-request.gateway';
+import { AcceptReviewDto, AcceptReviewResponseDto } from './dto/accept-review-response.dto';
+import { UpdateAcceptReviewDto } from './dto/update-accept-review.dto';
 
 @Injectable()
 export class AcceptReviewService {
@@ -18,7 +18,7 @@ export class AcceptReviewService {
     private readonly reviewRequestsGateway: ReviewRequestGateway
   ) { }
 
-  async create(createAcceptReview: CreateAcceptReview): Promise<AcceptReviewResponse> {
+  async create(createAcceptReview: CreateAcceptReview): Promise<AcceptReviewResponseDto> {
     const dev = await this.usersService.findOneById(createAcceptReview.devId)
     if (dev.roleId != UserRole.DEVELOPER) {
       throw new UnprocessableEntityException('User need to be a Dev to accept a review request')
@@ -53,7 +53,9 @@ export class AcceptReviewService {
   }
 
 
-  async cancelAcceptReview(updateAcceptReview: UpdateAcceptReview): Promise<AcceptReviewResponse> {
+  async cancelAcceptReview(updateAcceptReview: UpdateAcceptReviewDto): Promise<AcceptReviewResponseDto> {
+    const acceptReview = await this.findOne(updateAcceptReview.devId, updateAcceptReview.reviewId)
+
     const dev = await this.usersService.findOneById(updateAcceptReview.devId)
     if (dev.roleId !== UserRole.DEVELOPER) {
       throw new UnprocessableEntityException('User need to be a Dev to update a accept')
@@ -64,14 +66,52 @@ export class AcceptReviewService {
       throw new UnprocessableEntityException('Review need to be in progress to update yor status')
     }
 
+    if (updateAcceptReview.userId !== acceptReview.devId && updateAcceptReview.userId !== review.userId) {
+      throw new UnprocessableEntityException('To cancel a accept review you need to be the dev or owner')
+    }
+
     await this.acceptReviewsRepository.updateAcceptReviewProgress(updateAcceptReview)
 
     await this.reviewRequestsService.updateReviewRequestStatus(updateAcceptReview.reviewId, updateAcceptReview.reviewStatus)
 
+    this.reviewRequestsGateway.broadcastToRoom('work-room', 'new-review-request', review)
+
     return {
       devId: updateAcceptReview.devId,
       reviewId: updateAcceptReview.reviewId,
-      message: 'accept review updated successfully'
+      message: 'accept review cancelled successfully'
     }
+  }
+
+  async findOne(devId: string, reviewId: string) {
+    const acceptReview = await this.acceptReviewsRepository.findAcceptReview(reviewId, devId)
+    if (!acceptReview) {
+      throw new NotFoundException('Accept review not found')
+    }
+
+    return acceptReview
+  }
+
+  async findAllByDev(devId: string) {
+    const dev = await this.usersService.findOneById(devId)
+    if (!dev) {
+      throw new NotFoundException('Dev not found')
+    }
+
+    if (dev.roleId === UserRole.CLIENT) {
+      throw new NotFoundException('User need to be a Dev to see your accepts reviews')
+    }
+
+    const acceptReview = await this.acceptReviewsRepository.findAllByDev(devId)
+
+    const acceptReviewDto = acceptReview.map(review => {
+      return {
+        devId: review.devId,
+        reviewId: review.reviewId,
+        inProgress: review.inProgress,
+      } as AcceptReviewDto
+    })
+
+    return acceptReviewDto
   }
 }
