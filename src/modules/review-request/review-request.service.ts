@@ -30,6 +30,7 @@ export class ReviewRequestService {
 
     const reviewId = await this.reviewResquestRepository.create(createReviewRequestDto)
 
+    await this.reviewRequestGateway.addToSomeRoom(user.id, 'accept-room')
     this.reviewRequestGateway.broadcastToRoom('work-room', 'newReviewRequest', createReviewRequestDto)
 
     return {

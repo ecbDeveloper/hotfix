@@ -7,6 +7,7 @@ import { ReviewRequestService } from '../review-request/review-request.service';
 import { UpdateAcceptReview } from './dto/update-accept-review.dto';
 import { ReviewRequestStatus } from '../review-request/entities/review-request.entity';
 import { AcceptReviewResponse } from './dto/accept-review-response.dto';
+import { ReviewRequestGateway } from '../review-request/review-request.gateway';
 
 @Injectable()
 export class AcceptReviewService {
@@ -14,6 +15,7 @@ export class AcceptReviewService {
     private readonly acceptReviewsRepository: AcceptReviewRepository,
     private readonly usersService: UsersService,
     private readonly reviewRequestsService: ReviewRequestService,
+    private readonly reviewRequestsGateway: ReviewRequestGateway
   ) { }
 
   async create(createAcceptReview: CreateAcceptReview): Promise<AcceptReviewResponse> {
@@ -35,7 +37,13 @@ export class AcceptReviewService {
       throw new UnprocessableEntityException("A dev can't accept your own review")
     }
 
+    await this.usersService.updateDevStatus(dev.id, DevStatuses.ON_REVIEW)
+
+    await this.reviewRequestsService.updateReviewRequestStatus(review.id, ReviewRequestStatus.IN_PROGRESS)
+
     await this.acceptReviewsRepository.create(createAcceptReview)
+
+    this.reviewRequestsGateway.handlePrivateMessage(review.userId, 'accepted_review', createAcceptReview)
 
     return {
       devId: createAcceptReview.devId,

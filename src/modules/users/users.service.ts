@@ -56,14 +56,14 @@ export class UsersService {
     await this.usersRepository.updateDevStatus(userId, devStatus)
 
     if (devStatus === DevStatuses.WORKING) {
-      await this.reviewRequestsGateway.addToWorkRoom(userId)
+      await this.reviewRequestsGateway.addToSomeRoom(userId, 'work-room')
     } else {
-      await this.reviewRequestsGateway.removeFromWorkRoom(userId)
+      await this.reviewRequestsGateway.removeFromSomeRoom(userId, 'work-room')
     }
 
     return {
       id: userId,
-      message: `User is now ${DevStatuses[devStatus]}`
+      message: `User now is ${DevStatuses[devStatus]}`
     }
   }
 

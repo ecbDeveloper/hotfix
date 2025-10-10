@@ -46,7 +46,7 @@ export class ReviewRequestGateway implements OnGatewayConnection, OnGatewayDisco
     }
   }
 
-  async addToWorkRoom(userId: string) {
+  async addToSomeRoom(userId: string, room: string) {
     const socketId = this.connectedDevs.get(userId)
     if (!socketId) {
       console.log('User not found on connectedDevs')
@@ -55,12 +55,12 @@ export class ReviewRequestGateway implements OnGatewayConnection, OnGatewayDisco
 
     const socketClient = this.server.sockets.sockets.get(socketId)
     if (socketClient) {
-      await socketClient.join('work-room')
+      await socketClient.join(room)
       console.log(`Socket client with id - ${userId} connected from room successfully`)
     }
   }
 
-  async removeFromWorkRoom(userId: string) {
+  async removeFromSomeRoom(userId: string, room: string) {
     const socketId = this.connectedDevs.get(userId);
     if (!socketId) {
       console.log('User not found on connectedDevs')
@@ -69,7 +69,8 @@ export class ReviewRequestGateway implements OnGatewayConnection, OnGatewayDisco
 
     const socketClient = this.server.sockets.sockets.get(socketId);
     if (socketClient) {
-      await socketClient.leave('work-room');
+      await socketClient.leave(room);
+      socketClient.disconnect(true)
       this.connectedDevs.delete(userId);
       console.log(`Socket client with id - ${userId} disconnected from room successfully`)
     }
@@ -77,5 +78,14 @@ export class ReviewRequestGateway implements OnGatewayConnection, OnGatewayDisco
 
   broadcastToRoom(room: string, event: string, payload: any) {
     this.server.to(room).emit(event, payload);
+  }
+
+  handlePrivateMessage(toUserId: string, event: string, payload: any) {
+    const socketClient = this.connectedDevs.get(toUserId);
+    if (socketClient) {
+      this.server.to(socketClient).emit(event, payload);
+    } else {
+      console.log(`Usuário ${toUserId} não está conectado`);
+    }
   }
 } 
