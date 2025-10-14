@@ -1,0 +1,106 @@
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { DefaultResponse } from 'src/common/dto/default-response.dto';
+import { SolutionRepository } from './solution.repository';
+import { CreateSolutionDto } from './dto/create-solution.dto';
+import { AcceptReviewStatuses } from '../accept-review/entities/accept-review.entity';
+import { UsersService } from '../users/users.service';
+import { UserRole } from '../users/entities/user.entity';
+import { AcceptReviewService } from '../accept-review/accept-review.service';
+import { ReviewRequestService } from '../review-request/review-request.service';
+import { ReviewRequestStatus } from '../review-request/entities/review-request.entity';
+import { UpdateAcceptReviewDto } from '../accept-review/dto/update-accept-review.dto';
+import { AcceptSolutionDto } from './dto/accept-solutin.dot';
+
+@Injectable()
+export class SolutionService {
+  constructor(
+    private readonly solutionRepository: SolutionRepository,
+    private readonly reviewRequestService: ReviewRequestService,
+    private readonly acceptReviewsService: AcceptReviewService,
+    private readonly usersService: UsersService,
+  ) { }
+
+  async create(createSolutionDto: CreateSolutionDto): Promise<DefaultResponse> {
+    const dev = await this.usersService.findOneById(createSolutionDto.devId)
+    if (dev.roleId === UserRole.CLIENT) {
+      throw new UnprocessableEntityException('To send a solution you need to be a dev')
+    }
+
+    const alreadyExistsReviewSolution = await this.findOneByReview(createSolutionDto.reviewId)
+    if (alreadyExistsReviewSolution) {
+      throw new UnprocessableEntityException('Review request can have only one solution')
+    }
+
+    const acceptReview = await this.acceptReviewsService.findOne(createSolutionDto.reviewId, createSolutionDto.devId)
+    if (!acceptReview) {
+      throw new UnprocessableEntityException('To send solution to a review request, you need to accept it')
+    }
+
+    if (acceptReview.statusId !== AcceptReviewStatuses.ACCEPTED) {
+      throw new UnprocessableEntityException('User needs to accept dev, to send solution')
+    }
+
+    const solution = await this.solutionRepository.create(createSolutionDto)
+
+    return {
+      id: solution.id,
+      message: 'solution created successfully'
+    }
+  }
+
+  async acceptSolution(acceptSolutionDto: AcceptSolutionDto): Promise<DefaultResponse> {
+    const solution = await this.solutionRepository.findOne(acceptSolutionDto.solutionId)
+    if (!solution) {
+      throw new NotFoundException('Solution not found')
+    }
+
+    const review = await this.reviewRequestService.findOneById(solution.reviewId)
+    if (review.userId !== acceptSolutionDto.userId) {
+      throw new UnprocessableEntityException('You need to be the review owner to accept solution')
+    }
+
+    await this.reviewRequestService.updateReviewRequestStatus(solution.reviewId, ReviewRequestStatus.DONE)
+
+    const updateAcceptReview: UpdateAcceptReviewDto = {
+      acceptReviewStatus: AcceptReviewStatuses.COMPLETED,
+      reviewStatus: ReviewRequestStatus.DONE,
+      devId: solution.devId,
+      userId: acceptSolutionDto.userId,
+      reviewId: review.id
+    }
+    await this.acceptReviewsService.updateAcceptReviewStatus(updateAcceptReview)
+
+    await this.solutionRepository.acceptSolution(acceptSolutionDto.solutionId)
+
+    return {
+      id: review.id,
+      message: 'Review finished successfully'
+    }
+  }
+
+  async updateSolution(solution: string, solutionId: string, devId: string): Promise<DefaultResponse> {
+    const solutionExists = await this.solutionRepository.findOne(solutionId)
+    if (!solutionExists) {
+      throw new NotFoundException('Solution not found')
+    }
+
+    if (solutionExists.acceptedSolution === true) {
+      throw new UnprocessableEntityException('You cant change solution already done')
+    }
+
+    if (solutionExists.devId !== devId) {
+      throw new UnprocessableEntityException('To update the solution you need to be the owner dev')
+    }
+
+    await this.solutionRepository.updateSolution(solutionId, solution)
+
+    return {
+      id: solutionId,
+      message: "solution updated successfully"
+    }
+  }
+
+  async findOneByReview(reviewId: string) {
+    return await this.solutionRepository.findOneByReview(reviewId)
+  }
+}
