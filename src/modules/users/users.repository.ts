@@ -20,9 +20,13 @@ export class UsersRepository {
   async findOneById(userId: string) {
     const user = await User.findOne({
       where: { id: userId, active: true },
-      include: Language,
+      include: [
+        {
+          model: Language,
+          through: { attributes: [] },
+        },
+      ],
       attributes: { exclude: ['password'] },
-      raw: true
     });
 
     return user;
@@ -60,7 +64,12 @@ export class UsersRepository {
       limit,
       offset,
       where: { active: true },
-      include: Language,
+      include: [
+        {
+          model: Language,
+          through: { attributes: [] },
+        },
+      ],
       attributes: { exclude: ['password'] }
     })
 

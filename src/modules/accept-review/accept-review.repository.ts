@@ -55,4 +55,10 @@ export class AcceptReviewRepository {
       }
     })
   }
+
+  async findAllPeding(reviewId: string) {
+    return await AcceptReview.findAll({
+      where: { reviewId, status: AcceptReviewStatuses.PENDING }
+    })
+  }
 }

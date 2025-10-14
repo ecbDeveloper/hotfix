@@ -48,8 +48,8 @@ export class SolutionController {
   @ApiOkResponse({
     type: DefaultResponse
   })
-  async updateTextSolution(
-    @Param('solutionId') solutionId: string,
+  async updateSolutionText(
+    @Param('id') solutionId: string,
     @Body() updateSolutiondDto: UpdateSolutiondDto,
     @CurrentUser() user: User,
     @Res() res: Response,
@@ -68,6 +68,17 @@ export class SolutionController {
     @Res() res: Response
   ) {
     const response = await this.solutionsService.findOneByReview(reviewId)
+
+    return res.status(200).json(response)
+  }
+
+  @Get(':id')
+  @ApiOkResponse({ type: SolutionDto })
+  async findById(
+    @Param('id') solutionId: string,
+    @Res() res: Response
+  ) {
+    const response = await this.solutionsService.findOneById(solutionId)
 
     return res.status(200).json(response)
   }

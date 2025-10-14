@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary()
     table.uuid('solution_id').notNullable()
     table.text('comment').notNullable()
+    table.timestamps(true, true);
 
     table.foreign('solution_id').references('solutions.id')
   })

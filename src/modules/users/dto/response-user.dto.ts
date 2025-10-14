@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { DevStatuses, UserRole } from '../entities/user.entity'
-import { Languages } from 'src/common/entities/language.entity'
+import { DevStatuses, User, UserRole } from '../entities/user.entity'
+import { Language, Languages } from 'src/common/entities/language.entity'
+
+export type UserWithLanguages = User & { languages: Language[] };
 
 export class UserResponseDto {
   @ApiProperty({ example: 'a56c69ae-6f37-4c2d-b9db-8f876e7342a1' })
@@ -28,9 +30,19 @@ export class UserResponseDto {
   devStatusId: DevStatuses
 
   @ApiProperty({
-    type: [String],
+    type: [Number],
     example: [Languages.TYPESCRIPT, Languages.GO],
   })
-  languages: Languages[]
+  languages: number[]
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  createdAt?: Date;
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  updatedAt?: Date;
 }
 

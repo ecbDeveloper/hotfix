@@ -115,4 +115,17 @@ export class AcceptReviewService {
   async findInProgress(reviewId: string) {
     return await this.acceptReviewsRepository.findInProgress(reviewId)
   }
+
+  async findAllPending(reviewId: string, userId: string) {
+    const reviewRequest = await this.reviewRequestsService.findOneById(reviewId)
+    if (reviewRequest.status >= ReviewRequestStatus.IN_PROGRESS) {
+      throw new UnprocessableEntityException('The review need to be open, to see all accepts reviews')
+    }
+
+    if (reviewRequest.userId !== userId) {
+      throw new UnprocessableEntityException('You need to be the review owner to see all accepts reviews')
+    }
+
+    return await this.acceptReviewsRepository.findAllPeding(reviewId)
+  }
 }

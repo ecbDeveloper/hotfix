@@ -25,7 +25,6 @@ export class UsersController {
     return res.status(200).json(response)
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiPaginatedResponse(UserResponseDto)
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })

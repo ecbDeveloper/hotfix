@@ -103,4 +103,8 @@ export class SolutionService {
   async findOneByReview(reviewId: string) {
     return await this.solutionRepository.findOneByReview(reviewId)
   }
+
+  async findOneById(solutionId: string) {
+    return await this.solutionRepository.findOne(solutionId)
+  }
 }

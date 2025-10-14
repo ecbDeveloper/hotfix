@@ -5,7 +5,7 @@ import { DevStatuses, UserRole } from './entities/user.entity';
 import { DefaultResponse } from 'src/common/dto/default-response.dto';
 import { ReviewRequestGateway } from '../review-request/review-request.gateway';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserResponseDto } from './dto/response-user.dto';
+import { UserWithLanguages } from './dto/response-user.dto';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
 
 
@@ -67,26 +67,17 @@ export class UsersService {
     }
   }
 
-  async findAll(limit: number, offset: number): Promise<PaginatedDto<UserResponseDto>> {
+  async findAll(limit: number, offset: number): Promise<PaginatedDto<UserWithLanguages>> {
     const { total, results } = await this.usersRepository.findAll(limit, offset)
 
-    const dtoResults = results.map(user => {
-      return {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        roleId: user.roleId,
-        devStatusId: user.devStatusId,
-        languages: user.languages?.map(lang => lang.description),
-      } as UserResponseDto;
-    });
+
+    const resultsTyped = results as unknown as UserWithLanguages[];
 
     return {
       limit,
       offset,
       total,
-      results: dtoResults,
+      results: resultsTyped
     }
   }
 

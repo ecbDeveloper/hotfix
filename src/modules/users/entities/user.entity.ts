@@ -84,8 +84,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   devStatus!: DevStatuses;
 
   @BelongsToMany(() => Language, () => UserLanguage)
-  languages: Language[]
+  languages!: Language[]
 
   @HasMany(() => AcceptReview)
-  acceptedReviews: AcceptReview[];
+  acceptedReviews!: AcceptReview[];
 }

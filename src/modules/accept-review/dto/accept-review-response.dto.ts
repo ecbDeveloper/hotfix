@@ -14,6 +14,16 @@ export class AcceptReviewResponseDto {
 
   @ApiProperty()
   message: string;
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  createdAt?: Date;
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  updatedAt?: Date;
 }
 
 export class AcceptReviewDto {
@@ -32,5 +42,15 @@ export class AcceptReviewDto {
     default: AcceptReviewStatuses.PENDING,
   })
   statusId: AcceptReviewStatuses;
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  createdAt?: Date;
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  updatedAt?: Date;
 }
 

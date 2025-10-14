@@ -18,7 +18,7 @@ export class SolutionRepository {
 
   async findOne(solutionId: string) {
     return await Solution.findOne({
-      where: { id: solutionId }
+      where: { id: solutionId },
     })
   }
 
@@ -35,7 +35,7 @@ export class SolutionRepository {
     return await Solution.update({
       acceptedSolution: true
     }, {
-      where: { id: solutionId }
+      where: { id: solutionId },
     })
   }
 }

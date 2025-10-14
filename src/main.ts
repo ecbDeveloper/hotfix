@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { db } from './config/database.config';
-import { SnakeToCamelInterceptor } from './common/interceptors/snake-to-camel.interceptor';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -23,8 +22,6 @@ async function bootstrap() {
 
   const docomentFactory = () => SwaggerModule.createDocument(app, config, options)
   SwaggerModule.setup('docs', app, docomentFactory)
-
-  app.useGlobalInterceptors(new SnakeToCamelInterceptor());
 
   app.useGlobalPipes(new ValidationPipe());
 

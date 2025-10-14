@@ -50,4 +50,14 @@ export class ReviewRequestDto {
     example: Payments.PIX,
   })
   paymentMethod: Payments;
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  createdAt?: Date;
+
+  @ApiProperty({
+    example: '2025-10-14T12:34:56.000Z',
+  })
+  updatedAt?: Date;
 }

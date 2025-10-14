@@ -17,7 +17,7 @@ export class ReviewRequestRepository {
       where: {
         id: reviewId
       },
-      include: Solution
+      include: [Solution]
     })
   }
 

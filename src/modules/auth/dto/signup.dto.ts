@@ -4,7 +4,6 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
-  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -48,9 +47,8 @@ export class SignupDto {
   roleId: UserRole;
 
   @IsArray()
-  @IsInt({ each: true })
   @ArrayMinSize(1)
-  @IsEnum(Languages)
+  @IsEnum(Languages, { each: true })
   @ApiProperty({ type: [Number], example: [1, 3, 6], minItems: 1 })
   languages: number[]
 

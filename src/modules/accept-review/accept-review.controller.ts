@@ -94,4 +94,19 @@ export class AcceptReviewController {
 
     return res.status(200).json(acceptsReviews)
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':reviewId')
+  @ApiOkResponse({
+    type: [AcceptReviewDto]
+  })
+  async findAllPendingByReviewId(
+    @Param('reviewId') reviewId: string,
+    @CurrentUser() user: User,
+    @Res() res: Response
+  ) {
+    const acceptsReviews = await this.acceptReviewRequestService.findAllPending(reviewId, user.id)
+
+    return res.status(200).json(acceptsReviews)
+  }
 }

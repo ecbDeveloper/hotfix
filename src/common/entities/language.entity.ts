@@ -3,27 +3,32 @@ import { User } from "src/modules/users/entities/user.entity";
 import { UserLanguage } from "./user-language.entity";
 
 export enum Languages {
-  JAVASCRIPT = 'JavaScript',
-  TYPESCRIPT = 'TypeScript',
-  PYTHON = 'Python',
-  JAVA = 'Java',
-  CSHARP = 'C#',
-  C = 'C',
-  CPP = 'C++',
-  GO = 'Go',
-  RUST = 'Rust',
-  PHP = 'PHP',
-  RUBY = 'Ruby',
-  KOTLIN = 'Kotlin',
-  SWIFT = 'Swift',
-  DART = 'Dart',
-  SCALA = 'Scala',
-  R = 'R',
+  JAVASCRIPT = 1,
+  TYPESCRIPT,
+  PYTHON,
+  JAVA,
+  CSHARP,
+  C,
+  CPP,
+  GO,
+  RUST,
+  PHP,
+  RUBY,
+  KOTLIN,
+  SWIFT,
+  DART,
+  SCALA,
+  R,
 }
 
 
 @Table({ tableName: 'languages', timestamps: false })
 export class Language extends Model {
+  @Column({
+    primaryKey: true
+  })
+  declare id: number;
+
   @Column
   description: string;
 
