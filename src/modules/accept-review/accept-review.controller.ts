@@ -9,6 +9,7 @@ import { JwtAuthGuard } from "../auth/guard/auth.guard";
 import { ReviewRequestStatus } from "../review-request/entities/review-request.entity";
 import type { Response } from "express";
 import { UpdateAcceptReviewDto } from "./dto/update-accept-review.dto";
+import { AcceptReviewStatuses } from "./entities/accept-review.entity";
 
 @Controller('accepts-reviews')
 export class AcceptReviewController {
@@ -33,11 +34,11 @@ export class AcceptReviewController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':reviewId/:devId')
+  @Put(':reviewId/:devId/reject')
   @ApiOkResponse({
     type: AcceptReviewResponseDto
   })
-  async cancelReviewProgress(
+  async rejectAcceptReviewStatus(
     @Param('reviewId') reviewId: string,
     @Param('devId') devId: string,
     @CurrentUser() user: User,
@@ -47,11 +48,35 @@ export class AcceptReviewController {
       devId,
       reviewId,
       userId: user.id,
-      inProgress: false,
+      acceptReviewStatus: AcceptReviewStatuses.REJECTED,
       reviewStatus: ReviewRequestStatus.OPEN
     }
 
-    const response = await this.acceptReviewRequestService.cancelAcceptReview(updateAcceptReview)
+    const response = await this.acceptReviewRequestService.updateAcceptReviewStatus(updateAcceptReview)
+
+    return res.status(200).json(response)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':reviewId/:devId/accept')
+  @ApiOkResponse({
+    type: AcceptReviewResponseDto
+  })
+  async acceptAcceptReviewStatus(
+    @Param('reviewId') reviewId: string,
+    @Param('devId') devId: string,
+    @CurrentUser() user: User,
+    @Res() res: Response
+  ) {
+    const updateAcceptReview: UpdateAcceptReviewDto = {
+      devId,
+      reviewId,
+      userId: user.id,
+      acceptReviewStatus: AcceptReviewStatuses.ACCEPTED,
+      reviewStatus: ReviewRequestStatus.IN_PROGRESS
+    }
+
+    const response = await this.acceptReviewRequestService.updateAcceptReviewStatus(updateAcceptReview)
 
     return res.status(200).json(response)
   }

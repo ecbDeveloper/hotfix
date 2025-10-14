@@ -10,7 +10,7 @@ import { ApiPaginatedResponse } from 'src/common/decorators/paginated-response.d
 import { ReviewRequestDto } from './dto/response-review-request.dto';
 import type { Response } from 'express';
 
-@Controller('review-request')
+@Controller('review-requests')
 export class ReviewRequestController {
   constructor(private readonly reviewRequestService: ReviewRequestService) { }
 

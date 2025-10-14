@@ -8,6 +8,7 @@ import { ReviewRequestStatus } from '../review-request/entities/review-request.e
 import { ReviewRequestGateway } from '../review-request/review-request.gateway';
 import { AcceptReviewDto, AcceptReviewResponseDto } from './dto/accept-review-response.dto';
 import { UpdateAcceptReviewDto } from './dto/update-accept-review.dto';
+import { AcceptReviewStatuses } from './entities/accept-review.entity';
 
 @Injectable()
 export class AcceptReviewService {
@@ -37,9 +38,12 @@ export class AcceptReviewService {
       throw new UnprocessableEntityException("A dev can't accept your own review")
     }
 
-    await this.usersService.updateDevStatus(dev.id, DevStatuses.ON_REVIEW)
+    const acceptReview = await this.findInProgress(createAcceptReview.reviewId)
+    if (acceptReview) {
+      throw new UnprocessableEntityException("You can't accept a review alredy accepted or done")
+    }
 
-    await this.reviewRequestsService.updateReviewRequestStatus(review.id, ReviewRequestStatus.IN_PROGRESS)
+    await this.usersService.updateDevStatus(dev.id, DevStatuses.ON_REVIEW)
 
     await this.acceptReviewsRepository.create(createAcceptReview)
 
@@ -53,26 +57,19 @@ export class AcceptReviewService {
   }
 
 
-  async cancelAcceptReview(updateAcceptReview: UpdateAcceptReviewDto): Promise<AcceptReviewResponseDto> {
-    const acceptReview = await this.findOne(updateAcceptReview.devId, updateAcceptReview.reviewId)
-
-    const dev = await this.usersService.findOneById(updateAcceptReview.devId)
-    if (dev.roleId !== UserRole.DEVELOPER) {
-      throw new UnprocessableEntityException('User need to be a Dev to update a accept')
-    }
-
+  async updateAcceptReviewStatus(updateAcceptReview: UpdateAcceptReviewDto): Promise<AcceptReviewResponseDto> {
     const review = await this.reviewRequestsService.findOneById(updateAcceptReview.reviewId)
-    if (review.status !== ReviewRequestStatus.IN_PROGRESS) {
-      throw new UnprocessableEntityException('Review need to be in progress to update yor status')
-    }
-
-    if (updateAcceptReview.userId !== acceptReview.devId && updateAcceptReview.userId !== review.userId) {
-      throw new UnprocessableEntityException('To cancel a accept review you need to be the dev or owner')
+    if (updateAcceptReview.userId !== review.userId) {
+      throw new UnprocessableEntityException('To update a accept review you need to be the owner')
     }
 
     await this.acceptReviewsRepository.updateAcceptReviewProgress(updateAcceptReview)
 
     await this.reviewRequestsService.updateReviewRequestStatus(updateAcceptReview.reviewId, updateAcceptReview.reviewStatus)
+
+    if (updateAcceptReview.acceptReviewStatus === AcceptReviewStatuses.ACCEPTED) {
+      await this.acceptReviewsRepository.rejectAllPending(updateAcceptReview.reviewId)
+    }
 
     this.reviewRequestsGateway.broadcastToRoom('work-room', 'new-review-request', review)
 
@@ -108,10 +105,14 @@ export class AcceptReviewService {
       return {
         devId: review.devId,
         reviewId: review.reviewId,
-        inProgress: review.inProgress,
+        statusId: review.statusId,
       } as AcceptReviewDto
     })
 
     return acceptReviewDto
+  }
+
+  async findInProgress(reviewId: string) {
+    return await this.acceptReviewsRepository.findInProgress(reviewId)
   }
 }

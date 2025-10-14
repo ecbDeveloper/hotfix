@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { CreateReviewRequestDto } from "./dto/create-review-request.dto";
 import { ReviewRequest } from "./entities/review-request.entity";
 import { Op } from 'sequelize'
+import { Solution } from "../solution/entities/solution.entity";
 
 @Injectable()
 export class ReviewRequestRepository {
@@ -15,7 +16,8 @@ export class ReviewRequestRepository {
     return await ReviewRequest.findOne({
       where: {
         id: reviewId
-      }
+      },
+      include: Solution
     })
   }
 

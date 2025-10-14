@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { AcceptReviewStatuses } from "../entities/accept-review.entity";
 
 export class AcceptReviewResponseDto {
   @ApiProperty({
@@ -27,9 +28,9 @@ export class AcceptReviewDto {
   reviewId: string;
 
   @ApiProperty({
-    example: true,
-    default: true,
+    example: AcceptReviewStatuses.ACCEPTED,
+    default: AcceptReviewStatuses.PENDING,
   })
-  inProgress: boolean;
+  statusId: AcceptReviewStatuses;
 }
 

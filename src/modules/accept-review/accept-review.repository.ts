@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { CreateAcceptReview } from "./dto/create-accept-review.dto";
-import { AcceptReview } from "./entities/accept-review.entity";
+import { AcceptReview, AcceptReviewStatuses } from "./entities/accept-review.entity";
 import { UpdateAcceptReviewDto } from "./dto/update-accept-review.dto";
+import { Op } from "sequelize";
 
 @Injectable()
 export class AcceptReviewRepository {
@@ -10,8 +11,8 @@ export class AcceptReviewRepository {
   }
 
   async updateAcceptReviewProgress(updateAcceptReview: UpdateAcceptReviewDto) {
-    const { devId, reviewId, inProgress } = updateAcceptReview
-    return await AcceptReview.update({ inProgress }, {
+    const { devId, reviewId, acceptReviewStatus } = updateAcceptReview
+    return await AcceptReview.update({ status: acceptReviewStatus }, {
       where: { reviewId, devId }
     })
   }
@@ -24,7 +25,34 @@ export class AcceptReviewRepository {
 
   async findAllByDev(devId: string) {
     return await AcceptReview.findAll({
-      where: { devId }
+      where: {
+        devId, status: {
+          [Op.in]: [2, 4]
+        }
+      }
+    })
+  }
+
+  async findInProgress(reviewId: string) {
+    return await AcceptReview.findOne({
+      where: {
+        reviewId, status: {
+          status: {
+            [Op.in]: [AcceptReviewStatuses.ACCEPTED, AcceptReviewStatuses.COMPLETED],
+          },
+        }
+      }
+    })
+  }
+
+  async rejectAllPending(reviewId: string) {
+    return await AcceptReview.update({
+      status: AcceptReviewStatuses.REJECTED
+    }, {
+      where: {
+        reviewId,
+        status: AcceptReviewStatuses.PENDING,
+      }
     })
   }
 }

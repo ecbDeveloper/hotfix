@@ -8,6 +8,7 @@ import { AcceptReviewController } from './accept-review.controller';
 @Module({
   controllers: [AcceptReviewController],
   providers: [AcceptReviewService, AcceptReviewRepository],
-  imports: [ReviewRequestModule, UsersModule]
+  imports: [ReviewRequestModule, UsersModule],
+  exports: [AcceptReviewService]
 })
 export class AcceptReviewModule { }
