@@ -9,6 +9,8 @@ import { ReviewStatus } from 'src/common/entities/review-status.entity';
 import { PaymentMethods } from 'src/common/entities/payment-method.entity';
 import { DevStatus } from 'src/common/entities/dev-status.entity';
 import { AcceptReview } from 'src/modules/accept-review/entities/accept-review.entity';
+import { AcceptReviewStatus } from 'src/common/entities/accept-review-status.entity';
+import { Solution } from 'src/modules/solution/entities/solution.entity';
 
 dotenv.config();
 
@@ -19,7 +21,7 @@ export const db = new Sequelize({
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  models: [User, Role, Language, UserLanguage, ReviewRequest, ReviewStatus, PaymentMethods, DevStatus, AcceptReview],
+  models: [User, Role, Language, UserLanguage, ReviewRequest, ReviewStatus, PaymentMethods, DevStatus, AcceptReview, AcceptReviewStatus, Solution],
   define: {
     underscored: true,
   },
