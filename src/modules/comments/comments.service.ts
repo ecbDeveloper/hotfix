@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentsRepository } from './comments.repository';
 
 @Injectable()
 export class CommentsService {
+  constructor(
+    private readonly commentsRepository: CommentsRepository
+  ) { }
+
   create(createCommentDto: CreateCommentDto) {
     return 'This action adds a new comment';
   }
 
-  findAll() {
+  findAllBySolution() {
     return `This action returns all comments`;
   }
 
