@@ -15,5 +15,5 @@ export class CreateCommentDto {
   })
   @IsString()
   @MinLength(1)
-  comment: string;
+  content: string;
 }
