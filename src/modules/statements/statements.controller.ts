@@ -3,9 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StatementsService } from './statements.service';
 import { CreateStatementDto } from './dto/create-statement.dto';
 import { UpdateStatementDto } from './dto/update-statement.dto';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { RolesGuard } from '../auth/guard/roles.guard';
-import { Roles } from '../auth/decorator/roles.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('Statements')
 @Controller('statements')
