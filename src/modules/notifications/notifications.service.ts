@@ -3,8 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { Notification } from '../../common/entities/notification.entity';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { CreateNotificationDto, UpdateNotificationDto } from './dto';
 
 @Injectable()
 export class NotificationsService {
@@ -79,7 +78,5 @@ export class NotificationsService {
       throw new NotFoundException('Notification not found');
     }
     await this.notificationsRepository.delete(id);
-  }
-}
   }
 }

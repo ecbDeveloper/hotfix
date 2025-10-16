@@ -21,9 +21,8 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from '../../common/decorators/paginated-response.decorator';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { DefaultResponse } from '../../common/dto/default-response.dto';
-import { Notification } from './entities/notification.entity';
+import { PaginationQueryDto, DefaultResponse } from '../../common/dto';
+import { Notification } from '../../common/entities/notification.entity';
 
 @ApiTags('notifications')
 @Controller('notifications')
