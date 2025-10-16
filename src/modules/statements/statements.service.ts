@@ -4,16 +4,30 @@ import { Repository } from 'typeorm';
 import { Statement } from '../../common/entities/statement.entity';
 import { CreateStatementDto } from './dto/create-statement.dto';
 import { UpdateStatementDto } from './dto/update-statement.dto';
+import { StatementNotificationsService } from './statement-notifications.service';
 
 @Injectable()
 export class StatementsService {
   constructor(
     @InjectRepository(Statement)
     private readonly statementsRepository: Repository<Statement>,
+    private readonly notificationsService: StatementNotificationsService,
   ) {}
 
   async create(createStatementDto: CreateStatementDto) {
-    return this.statementsRepository.create(createStatementDto);
+    const statement = this.statementsRepository.create(createStatementDto);
+    await this.statementsRepository.save(statement);
+
+    await this.notificationsService.notifyStatementCreated(
+      statement.userId,
+      {
+        id: statement.id,
+        amount: statement.amount,
+        type: statement.type
+      }
+    );
+
+    return statement;
   }
 
   async findAll(userId?: string) {
@@ -34,9 +48,33 @@ export class StatementsService {
   }
 
   async update(id: string, updateStatementDto: UpdateStatementDto) {
-    await this.findOne(id);
+    const statement = await this.findOne(id);
     await this.statementsRepository.update(id, updateStatementDto);
+    
+    await this.notificationsService.notifyStatementUpdated(
+      statement.userId,
+      {
+        id: statement.id,
+        amount: statement.amount,
+        type: statement.type
+      }
+    );
+
     return this.findOne(id);
+  }
+
+  async remove(id: string) {
+    const statement = await this.findOne(id);
+    await this.statementsRepository.remove(statement);
+
+    await this.notificationsService.notifyStatementDeleted(
+      statement.userId,
+      {
+        id: statement.id,
+        amount: statement.amount,
+        type: statement.type
+      }
+    );
   }
 
   async delete(id: string) {

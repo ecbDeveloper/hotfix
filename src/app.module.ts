@@ -11,6 +11,8 @@ import { SystemConfigsModule } from './modules/system-configs/system-configs.mod
 import { StatementsModule } from './modules/statements/statements.module';
 import { DatabaseModule } from './config/database.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { typeOrmConfig } from './config/typeorm.config';
 
 @Module({
@@ -29,6 +31,8 @@ import { typeOrmConfig } from './config/typeorm.config';
     SystemConfigsModule,
     StatementsModule,
     WebhooksModule,
+    NotificationsModule,
+    AuditModule,
   ],
 })
 export class AppModule { }

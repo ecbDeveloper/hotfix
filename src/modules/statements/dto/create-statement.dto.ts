@@ -1,17 +1,6 @@
 import { IsString, IsNumber, IsOptional, IsEnum, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-
-enum StatementType {
-  CREDIT = 'credit',
-  DEBIT = 'debit',
-}
-
-enum StatementStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  CANCELLED = 'cancelled',
-}
+import { StatementType, StatementStatus } from '../../../common/entities/statement.entity';
 
 export class CreateStatementDto {
   @ApiProperty({
