@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
-import { ChatController } from './chat.controller';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ReviewRequestModule } from '../review-request/review-request.module';
+import { ChatRoom } from './entities/chat-room.entity';
+import { ChatMessage } from './entities/chat-message.entity';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
-import { ReviewRequestModule } from '../review-request/review-request.module';
+import { ChatController } from './chat.controller.js';
 
 @Module({
-  imports: [ReviewRequestModule],
+  imports: [
+    ReviewRequestModule,
+    SequelizeModule.forFeature([ChatRoom, ChatMessage]),
+    EventEmitterModule.forRoot()
+  ],
   controllers: [ChatController],
-  providers: [ChatService, ChatGateway],
+  providers: [ChatGateway, ChatService],
   exports: [ChatService]
 })
 export class ChatModule {}

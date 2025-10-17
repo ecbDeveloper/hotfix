@@ -9,9 +9,9 @@ import {
   HasMany,
   Default,
 } from 'sequelize-typescript';
-import { ReviewRequest } from 'src/modules/review-request/entities/review-request.entity';
-import { User } from 'src/modules/users/entities/user.entity';
-import { ChatMessage } from './chat-message.entity';
+import { ReviewRequest } from '../../../modules/review-request/entities/review-request.entity';
+import { User } from '../../../modules/users/entities/user.entity';
+import { ChatMessage } from './chat-message.entity.js';
 
 interface ChatRoomAttributes {
   id: string;

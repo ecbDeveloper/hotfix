@@ -3,15 +3,15 @@ import { Op } from 'sequelize';
 import { ChatMessage } from './entities/chat-message.entity';
 import { ChatRoom } from './entities/chat-room.entity';
 import { ReviewRequestService } from '../review-request/review-request.service';
-import { ChatGateway } from './chat.gateway';
 import { CreateChatRoomDto, CreateChatMessageDto, UpdateChatMessageDto } from './dto/chat.dto';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ChatService {
   constructor(
     private readonly reviewRequestService: ReviewRequestService,
-    private readonly chatGateway: ChatGateway,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async createRoom(createChatRoomDto: CreateChatRoomDto, userId: string): Promise<ChatRoom> {
@@ -43,7 +43,7 @@ export class ChatService {
       clientId: review.userId,
     });
 
-    await this.chatGateway.handleRoomCreated(room);
+    this.eventEmitter.emit('chat.room.created', room);
 
     return room;
   }
@@ -108,7 +108,7 @@ export class ChatService {
       content: createMessageDto.content
     });
 
-    await this.chatGateway.handleNewMessage(message);
+    this.eventEmitter.emit('chat.message.created', message);
 
     return message;
   }
@@ -130,7 +130,7 @@ export class ChatService {
     message.edited = true;
     await message.save();
 
-    await this.chatGateway.handleMessageUpdated(message);
+    this.eventEmitter.emit('chat.message.updated', message);
 
     return message;
   }
@@ -149,6 +149,6 @@ export class ChatService {
     }
 
     await message.destroy();
-    await this.chatGateway.handleMessageDeleted(messageId, message.roomId);
+    this.eventEmitter.emit('chat.message.deleted', { messageId, roomId: message.roomId });
   }
 }
