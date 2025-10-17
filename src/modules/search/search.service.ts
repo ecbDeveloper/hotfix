@@ -17,7 +17,7 @@ export class SearchService {
     };
 
     if (query.languages?.length) {
-      where['$userLanguages.languageId$'] = {
+      where['$languages.id$'] = {
         [Op.in]: query.languages,
       };
     }
@@ -28,7 +28,7 @@ export class SearchService {
 
     const { count, rows } = await User.findAndCountAll({
       where,
-      include: ['userLanguages'],
+      include: ['languages'],
       distinct: true,
     });
 
@@ -39,8 +39,8 @@ export class SearchService {
         firstName: user.firstName,
         lastName: user.lastName,
         roleId: user.roleId,
-        devStatus: user.devStatus,
-        languages: user.userLanguages.map(ul => ul.languageId),
+        devStatusId: user.devStatus,
+        languages: user.languages.map(l => l.id),
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
       })),

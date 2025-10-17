@@ -1,10 +1,11 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { SearchService } from './search.service';
+import { SearchService } from './search.service.js';
 import { SearchDevsDto, SearchReviewsDto, SearchSolutionsDto } from './dto/search.dto';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
-import { User } from '../users/dto/response-user.dto';
+import { User } from '../users/entities/user.entity';
+import { UserResponseDto } from '../users/dto/response-user.dto';
 import { ReviewRequestDto } from '../review-request/dto/review-request.dto';
 import { SolutionDto } from '../solution/dto/solution.dto';
 
@@ -22,7 +23,7 @@ export class SearchController {
   })
   async searchDevs(
     @Query() query: SearchDevsDto,
-  ): Promise<PaginatedDto<User>> {
+  ): Promise<PaginatedDto<UserResponseDto>> {
     return await this.searchService.searchDevs(query);
   }
 
