@@ -12,6 +12,11 @@ export class SolutionCommentDto {
   solutionId: string;
 
   @ApiProperty({
+    example: '1e9a2c1d-6f3a-4baf-bb52-98df2b22f111',
+  })
+  devId: string;
+
+  @ApiProperty({
     example: 'Gostei da clareza da explicação!',
   })
   comment: string;
