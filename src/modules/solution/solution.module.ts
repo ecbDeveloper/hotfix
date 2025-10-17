@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { AcceptReviewModule } from '../accept-review/accept-review.module';
 
 @Module({
+  exports: [SolutionService],
   controllers: [SolutionController],
   providers: [SolutionService, SolutionRepository],
   imports: [ReviewRequestModule, UsersModule, AcceptReviewModule]
