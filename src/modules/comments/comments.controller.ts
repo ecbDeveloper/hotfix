@@ -85,7 +85,4 @@ export class CommentsController {
   ) {
     return this.commentsService.remove(id, user.id);
   }
-  remove(@Param('id') id: string) {
-    return this.commentsService.remove(+id);
-  }
 }

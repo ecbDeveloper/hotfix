@@ -7,18 +7,44 @@ import { Solution } from "../solution/entities/solution.entity";
 @Injectable()
 export class ReviewRequestRepository {
   async create(createReviewRequestDto: CreateReviewRequestDto) {
-    const reviewRequest = await ReviewRequest.create(createReviewRequestDto)
+    const reviewRequest = await ReviewRequest.create(createReviewRequestDto);
+    return reviewRequest.id;
+  }
 
-    return reviewRequest.id
+  async findAll(limit?: number, offset?: number) {
+    const { count, rows } = await ReviewRequest.findAndCountAll({
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+      include: [Solution],
+    });
+
+    return {
+      total: count,
+      results: rows
+    };
+  }
+
+  async findAllByUserId(userId: string, limit?: number, offset?: number) {
+    const { count, rows } = await ReviewRequest.findAndCountAll({
+      where: { userId },
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+      include: [Solution],
+    });
+
+    return {
+      total: count,
+      results: rows
+    };
   }
 
   async findOneById(reviewId: string) {
     return await ReviewRequest.findOne({
-      where: {
-        id: reviewId
-      },
+      where: { id: reviewId },
       include: [Solution]
-    })
+    });
   }
 
   async findReviewRequestInProgressByUser(userId: string) {
@@ -29,26 +55,13 @@ export class ReviewRequestRepository {
           [Op.in]: [1, 2]
         }
       }
-    })
+    });
   }
 
   async updateReviewRequestStatus(reviewId: string, status: number) {
     return await ReviewRequest.update(
       { status },
-      { where: { id: reviewId } },
+      { where: { id: reviewId } }
     );
-  }
-
-  async findAllByUserId(userId: string, limit: number, offset: number) {
-    const { count, rows } = await ReviewRequest.findAndCountAll({
-      limit,
-      offset,
-      where: { userId },
-    });
-
-    return {
-      total: count,
-      results: rows
-    }
   }
 }

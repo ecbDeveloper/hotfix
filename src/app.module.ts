@@ -13,6 +13,7 @@ import { DatabaseModule } from './config/database.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { typeOrmConfig } from './config/typeorm.config';
 
 @Module({
@@ -33,6 +34,7 @@ import { typeOrmConfig } from './config/typeorm.config';
     WebhooksModule,
     NotificationsModule,
     AuditModule,
+    ChatModule,
   ],
 })
 export class AppModule { }

@@ -72,13 +72,3 @@ export class Comment extends Model<Comment> {
   @BelongsTo(() => Solution)
   solution: Solution;
 }
-
-  @BelongsTo(() => Solution)
-  solution: Solution;
-
-  @Column({
-    type: DataType.TEXT,
-    allowNull: false,
-  })
-  comment: string;
-}

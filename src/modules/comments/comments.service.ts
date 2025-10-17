@@ -25,7 +25,7 @@ export class CommentsService {
     const { page = 1, limit = 10 } = query;
     const offset = (page - 1) * limit;
 
-    const [comments, total] = await this.commentModel.findAndCountAll({
+    const { rows: comments, count: total } = await this.commentModel.findAndCountAll({
       limit,
       offset,
       order: [['createdAt', 'DESC']],
@@ -39,7 +39,7 @@ export class CommentsService {
     const { page = 1, limit = 10 } = query;
     const offset = (page - 1) * limit;
 
-    const [comments, total] = await this.commentModel.findAndCountAll({
+    const { rows: comments, count: total } = await this.commentModel.findAndCountAll({
       where: { solutionId },
       limit,
       offset,
