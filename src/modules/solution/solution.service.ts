@@ -49,12 +49,9 @@ export class SolutionService {
   }
 
   async acceptSolution(acceptSolutionDto: AcceptSolutionDto): Promise<DefaultResponse> {
-    const solution = await this.solutionRepository.findOne(acceptSolutionDto.solutionId)
-    if (!solution) {
-      throw new NotFoundException('Solution not found')
-    }
+    const solution = await this.findOneById(acceptSolutionDto.solutionId)
 
-    const acceptReview = await this.acceptReviewsService.findOne(solution.acceptReviewId)
+    const acceptReview = await this.acceptReviewsService.findOneById(solution.acceptReviewId)
 
     const review = await this.reviewRequestService.findOneById(acceptReview.reviewId)
     if (review.userId !== acceptSolutionDto.userId) {
@@ -81,12 +78,12 @@ export class SolutionService {
   }
 
   async updateSolution(solution: string, solutionId: string, devId: string): Promise<DefaultResponse> {
-    const solutionExists = await this.solutionRepository.findOne(solutionId)
+    const solutionExists = await this.solutionRepository.findOneById(solutionId)
     if (!solutionExists) {
       throw new NotFoundException('Solution not found')
     }
 
-    const acceptReview = await this.acceptReviewsService.findOne(solutionExists.acceptReviewId)
+    const acceptReview = await this.acceptReviewsService.findOneById(solutionExists.acceptReviewId)
 
     if (solutionExists.acceptedSolution === true) {
       throw new UnprocessableEntityException('You cant change solution already done')
@@ -102,5 +99,14 @@ export class SolutionService {
       id: solutionId,
       message: "solution updated successfully"
     }
+  }
+
+  async findOneById(solutionId: string) {
+    const solution = await this.solutionRepository.findOneById(solutionId)
+    if (!solution) {
+      throw new NotFoundException('Solution not found')
+    }
+
+    return solution
   }
 }

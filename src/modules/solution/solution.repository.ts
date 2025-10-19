@@ -16,7 +16,7 @@ export class SolutionRepository {
     })
   }
 
-  async findOne(solutionId: string) {
+  async findOneById(solutionId: string) {
     return await Solution.findOne({
       where: { id: solutionId },
     })

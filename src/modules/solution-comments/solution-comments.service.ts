@@ -28,9 +28,9 @@ export class SolutionCommentsService {
       throw new UnprocessableEntityException("You can't send a new comment to a closed solution")
     }
 
-    const acceptReview = await this.acceptReviewService.findOne(solution.devId, solution.reviewId)
+    const acceptReview = await this.acceptReviewService.findOneById(solution.acceptReviewId)
 
-    const reviewRequest = await this.reviewRequestsService.findOneById(solution.reviewId)
+    const reviewRequest = await this.reviewRequestsService.findOneById(acceptReview.reviewId)
 
     if (createSolutionCommentDto.userId !== acceptReview.devId && createSolutionCommentDto.userId !== reviewRequest.userId) {
       throw new UnprocessableEntityException('To comment in a solution you need to be the dev or owner')
@@ -50,9 +50,9 @@ export class SolutionCommentsService {
       throw new NotFoundException('Solution not found')
     }
 
-    const acceptReview = await this.acceptReviewService.findOne(solution.devId, solution.reviewId)
+    const acceptReview = await this.acceptReviewService.findOneById(solution.acceptReviewId)
 
-    const reviewRequest = await this.reviewRequestsService.findOneById(solution.reviewId)
+    const reviewRequest = await this.reviewRequestsService.findOneById(acceptReview.reviewId)
 
     if (userId !== acceptReview.devId && userId !== reviewRequest.userId) {
       throw new UnprocessableEntityException('To see all comment from a solution you need to be the dev or owner')
@@ -62,7 +62,7 @@ export class SolutionCommentsService {
   }
 
   async findOne(id: string, userId: string) {
-    const comment = await this.solutionCommentsRepository.findOne(id)
+    const comment = await this.solutionCommentsRepository.findOneById(id)
     if (!comment) {
       throw new NotFoundException('Comment not found')
     }
@@ -72,9 +72,9 @@ export class SolutionCommentsService {
       throw new NotFoundException('Solution not found')
     }
 
-    const acceptReview = await this.acceptReviewService.findOne(solution.devId, solution.reviewId)
+    const acceptReview = await this.acceptReviewService.findOneById(solution.acceptReviewId)
 
-    const reviewRequest = await this.reviewRequestsService.findOneById(solution.reviewId)
+    const reviewRequest = await this.reviewRequestsService.findOneById(acceptReview.reviewId)
 
     if (userId !== acceptReview.devId && userId !== reviewRequest.userId) {
       throw new UnprocessableEntityException('To see one comment from a solution you need to be the dev or owner')

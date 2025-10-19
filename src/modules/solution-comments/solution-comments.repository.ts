@@ -15,7 +15,7 @@ export class SolutionCommentsRepository {
     })
   }
 
-  async findOne(id: string) {
+  async findOneById(id: string) {
     return await SolutionComment.findOne({
       where: { id }
     })

@@ -62,7 +62,7 @@ export class AcceptReviewRepository {
     })
   }
 
-  async findOne(acceptReviewId: string) {
+  async findOneById(acceptReviewId: string) {
     return await AcceptReview.findOne({
       where: { id: acceptReviewId }
     })

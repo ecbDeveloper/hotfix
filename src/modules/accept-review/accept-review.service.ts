@@ -38,7 +38,7 @@ export class AcceptReviewService {
       throw new UnprocessableEntityException("A dev can't accept your own review")
     }
 
-    const acceptReview = await this.findInProgress(createAcceptReview.reviewId)
+    const acceptReview = await this.acceptReviewsRepository.findInProgress(createAcceptReview.reviewId)
     if (acceptReview) {
       throw new UnprocessableEntityException("You can't accept a review alredy accepted or done")
     }
@@ -112,10 +112,6 @@ export class AcceptReviewService {
     return acceptReviewDto
   }
 
-  async findInProgress(reviewId: string) {
-    return await this.acceptReviewsRepository.findInProgress(reviewId)
-  }
-
   async findAllPending(reviewId: string, userId: string) {
     const reviewRequest = await this.reviewRequestsService.findOneById(reviewId)
     if (reviewRequest.status >= ReviewRequestStatus.IN_PROGRESS) {
@@ -129,8 +125,8 @@ export class AcceptReviewService {
     return await this.acceptReviewsRepository.findAllPeding(reviewId)
   }
 
-  async findOne(acceptReviewId: string) {
-    const acceptReview = await this.acceptReviewsRepository.findOne(acceptReviewId)
+  async findOneById(acceptReviewId: string) {
+    const acceptReview = await this.acceptReviewsRepository.findOneById(acceptReviewId)
     if (!acceptReview) {
       throw new NotFoundException('Accept review not found')
     }
