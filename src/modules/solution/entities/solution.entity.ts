@@ -8,13 +8,11 @@ import {
   BelongsTo,
   Default,
 } from 'sequelize-typescript';
-import { ReviewRequest } from 'src/modules/review-request/entities/review-request.entity';
-import { User } from 'src/modules/users/entities/user.entity';
+import { AcceptReview } from 'src/modules/accept-review/entities/accept-review.entity';
 
 interface SolutionAttributes {
   id: string;
-  reviewId: string;
-  devId: string;
+  acceptReviewId: string;
   solution: string;
   acceptedSolution: boolean;
 }
@@ -33,25 +31,15 @@ export class Solution extends Model<SolutionAttributes, SolutionCreationAttribut
   })
   declare id: string;
 
-  @ForeignKey(() => ReviewRequest)
+  @ForeignKey(() => AcceptReview)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  reviewId: string;
+  acceptReviewId: string;
 
-  @BelongsTo(() => ReviewRequest)
-  reviewRequest: ReviewRequest;
-
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  devId: string;
-
-  @BelongsTo(() => User)
-  dev: User;
+  @BelongsTo(() => AcceptReview)
+  acceptReview: AcceptReview;
 
   @Column({
     type: DataType.TEXT,

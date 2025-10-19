@@ -17,7 +17,7 @@ export class AcceptReviewRepository {
     })
   }
 
-  async findAcceptReview(reviewId: string, devId: string) {
+  async findOneByDevAndReviewId(reviewId: string, devId: string) {
     return await AcceptReview.findOne({
       where: { reviewId, devId }
     })
@@ -61,4 +61,17 @@ export class AcceptReviewRepository {
       where: { reviewId, status: AcceptReviewStatuses.PENDING }
     })
   }
+
+  async findOne(acceptReviewId: string) {
+    return await AcceptReview.findOne({
+      where: { id: acceptReviewId }
+    })
+  }
+
+  async findOneByDevAndAcceptReviewId(acceptReviewId: string, devId: string) {
+    return await AcceptReview.findOne({
+      where: { id: acceptReviewId, devId }
+    })
+  }
+
 }
