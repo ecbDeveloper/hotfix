@@ -61,7 +61,7 @@ export class SolutionCommentsService {
     return this.solutionCommentsRepository.findAllBySolution(solutionId)
   }
 
-  async findOne(id: string, userId: string) {
+  async findOneById(id: string, userId: string) {
     const comment = await this.solutionCommentsRepository.findOneById(id)
     if (!comment) {
       throw new NotFoundException('Comment not found')
@@ -84,7 +84,7 @@ export class SolutionCommentsService {
   }
 
   async update(id: string, updateCommentDto: UpdateSolutionCommentDto): Promise<DefaultResponse> {
-    const comment = await this.findOne(id, updateCommentDto.userId)
+    const comment = await this.findOneById(id, updateCommentDto.userId)
     if (!comment) {
       throw new NotFoundException('Comment not found')
     }
@@ -118,7 +118,7 @@ export class SolutionCommentsService {
   }
 
   async remove(id: string, userId: string): Promise<DefaultResponse> {
-    const comment = await this.findOne(id, userId)
+    const comment = await this.findOneById(id, userId)
     if (!comment) {
       throw new NotFoundException('Comment not found')
     }

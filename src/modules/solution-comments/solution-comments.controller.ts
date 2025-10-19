@@ -52,7 +52,7 @@ export class SolutionCommentsController {
     @CurrentUser() user: User,
     @Res() res: Response
   ) {
-    const response = await this.solutionCommentsService.findOne(id, user.id);
+    const response = await this.solutionCommentsService.findOneById(id, user.id);
 
     return res.status(200).json(response)
   }
