@@ -80,8 +80,8 @@ export class AcceptReviewService {
     }
   }
 
-  async findOne(devId: string, reviewId: string) {
-    const acceptReview = await this.acceptReviewsRepository.findAcceptReview(reviewId, devId)
+  async findOneByDevAndReviewId(devId: string, reviewId: string) {
+    const acceptReview = await this.acceptReviewsRepository.findOneByDevAndReviewId(reviewId, devId)
     if (!acceptReview) {
       throw new NotFoundException('Accept review not found')
     }
@@ -127,5 +127,20 @@ export class AcceptReviewService {
     }
 
     return await this.acceptReviewsRepository.findAllPeding(reviewId)
+  }
+
+  async findOne(acceptReviewId: string) {
+    const acceptReview = await this.acceptReviewsRepository.findOne(acceptReviewId)
+    if (!acceptReview) {
+      throw new NotFoundException('Accept review not found')
+    }
+
+    return acceptReview
+  }
+
+  async findOneByDevAndAcceptReviewId(devId: string, acceptReviewId: string) {
+    const acceptReview = await this.acceptReviewsRepository.findOneByDevAndAcceptReviewId(acceptReviewId, devId)
+
+    return acceptReview
   }
 }

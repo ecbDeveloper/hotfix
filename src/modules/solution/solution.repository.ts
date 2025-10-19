@@ -10,9 +10,9 @@ export class SolutionRepository {
     return solutionReview
   }
 
-  async findOneByReview(reviewId: string) {
+  async findOneByAcceptReview(acceptReviewId: string) {
     return await Solution.findOne({
-      where: { reviewId }
+      where: { acceptReviewId }
     })
   }
 

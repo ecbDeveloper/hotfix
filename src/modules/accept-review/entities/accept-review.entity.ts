@@ -1,5 +1,5 @@
 import { Optional } from 'sequelize';
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript'
+import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript'
 import { AcceptReviewStatus } from 'src/common/entities/accept-review-status.entity';
 import { ReviewRequest } from 'src/modules/review-request/entities/review-request.entity';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -12,19 +12,24 @@ export enum AcceptReviewStatuses {
 }
 
 interface AcceptReviewAttributes {
+  id: string,
   devId: string
   reviewId: string
   status: AcceptReviewStatuses
 }
 
-export type AcceptReviewAttributesCreation = Optional<AcceptReviewAttributes, 'status'>
+export type AcceptReviewAttributesCreation = Optional<AcceptReviewAttributes, 'status' | 'id'>
 
 @Table({ tableName: 'accepts_reviews' })
 export class AcceptReview extends Model<AcceptReviewAttributes, AcceptReviewAttributesCreation> {
+  @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  declare id: string;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
-    primaryKey: true,
   })
   devId: string;
 
@@ -34,7 +39,6 @@ export class AcceptReview extends Model<AcceptReviewAttributes, AcceptReviewAttr
   @ForeignKey(() => ReviewRequest)
   @Column({
     type: DataType.UUID,
-    primaryKey: true,
   })
   reviewId: string;
 

@@ -9,12 +9,7 @@ export class SolutionDto {
   @ApiProperty()
   @IsUUID()
   @IsNotEmpty()
-  reviewId: string;
-
-  @ApiProperty()
-  @IsUUID()
-  @IsNotEmpty()
-  devId: string;
+  acceptReviewId: string;
 
   @ApiProperty()
   @IsString()

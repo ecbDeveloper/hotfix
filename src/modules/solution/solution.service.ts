@@ -9,7 +9,7 @@ import { AcceptReviewService } from '../accept-review/accept-review.service';
 import { ReviewRequestService } from '../review-request/review-request.service';
 import { ReviewRequestStatus } from '../review-request/entities/review-request.entity';
 import { UpdateAcceptReviewDto } from '../accept-review/dto/update-accept-review.dto';
-import { AcceptSolutionDto } from './dto/accept-solutin.dot';
+import { AcceptSolutionDto } from './dto/accept-solution.dto';
 
 @Injectable()
 export class SolutionService {
@@ -26,12 +26,12 @@ export class SolutionService {
       throw new UnprocessableEntityException('To send a solution you need to be a dev')
     }
 
-    const alreadyExistsReviewSolution = await this.findOneByReview(createSolutionDto.reviewId)
+    const alreadyExistsReviewSolution = await this.solutionRepository.findOneByAcceptReview(createSolutionDto.acceptReviewId)
     if (alreadyExistsReviewSolution) {
       throw new UnprocessableEntityException('Review request can have only one solution')
     }
 
-    const acceptReview = await this.acceptReviewsService.findOne(createSolutionDto.reviewId, createSolutionDto.devId)
+    const acceptReview = await this.acceptReviewsService.findOneByDevAndAcceptReviewId(createSolutionDto.acceptReviewId, createSolutionDto.devId)
     if (!acceptReview) {
       throw new UnprocessableEntityException('To send solution to a review request, you need to accept it')
     }
@@ -54,17 +54,19 @@ export class SolutionService {
       throw new NotFoundException('Solution not found')
     }
 
-    const review = await this.reviewRequestService.findOneById(solution.reviewId)
+    const acceptReview = await this.acceptReviewsService.findOne(solution.acceptReviewId)
+
+    const review = await this.reviewRequestService.findOneById(acceptReview.reviewId)
     if (review.userId !== acceptSolutionDto.userId) {
       throw new UnprocessableEntityException('You need to be the review owner to accept solution')
     }
 
-    await this.reviewRequestService.updateReviewRequestStatus(solution.reviewId, ReviewRequestStatus.DONE)
+    await this.reviewRequestService.updateReviewRequestStatus(acceptReview.reviewId, ReviewRequestStatus.DONE)
 
     const updateAcceptReview: UpdateAcceptReviewDto = {
       acceptReviewStatus: AcceptReviewStatuses.COMPLETED,
       reviewStatus: ReviewRequestStatus.DONE,
-      devId: solution.devId,
+      devId: acceptReview.devId,
       userId: acceptSolutionDto.userId,
       reviewId: review.id
     }
@@ -84,11 +86,13 @@ export class SolutionService {
       throw new NotFoundException('Solution not found')
     }
 
+    const acceptReview = await this.acceptReviewsService.findOne(solutionExists.acceptReviewId)
+
     if (solutionExists.acceptedSolution === true) {
       throw new UnprocessableEntityException('You cant change solution already done')
     }
 
-    if (solutionExists.devId !== devId) {
+    if (acceptReview.devId !== devId) {
       throw new UnprocessableEntityException('To update the solution you need to be the owner dev')
     }
 
@@ -98,13 +102,5 @@ export class SolutionService {
       id: solutionId,
       message: "solution updated successfully"
     }
-  }
-
-  async findOneByReview(reviewId: string) {
-    return await this.solutionRepository.findOneByReview(reviewId)
-  }
-
-  async findOneById(solutionId: string) {
-    return await this.solutionRepository.findOne(solutionId)
   }
 }
