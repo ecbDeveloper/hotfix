@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/sequelize';
 import { SystemConfig } from '../../common/entities/system-config.entity';
 import { CreateSystemConfigDto } from './dto/create-system-config.dto';
 import { UpdateSystemConfigDto } from './dto/update-system-config.dto';
@@ -8,20 +7,18 @@ import { UpdateSystemConfigDto } from './dto/update-system-config.dto';
 @Injectable()
 export class SystemConfigsService {
   constructor(
-    @InjectRepository(SystemConfig)
-    private readonly systemConfigsRepository: Repository<SystemConfig>,
+    @InjectModel(SystemConfig)
+    private readonly systemConfig: typeof SystemConfig,
   ) {}
 
   async findAll() {
-    return this.systemConfigsRepository.find({
-      order: { id: 'ASC' }
+    return this.systemConfig.findAll({
+      order: [['id', 'ASC']]
     });
   }
 
   async findOne(id: number) {
-    const config = await this.systemConfigsRepository.findOne({
-      where: { id }
-    });
+    const config = await this.systemConfig.findByPk(id);
     if (!config) {
       throw new NotFoundException(`System config with ID ${id} not found`);
     }
@@ -29,7 +26,7 @@ export class SystemConfigsService {
   }
 
   async findByKey(key: string) {
-    const config = await this.systemConfigsRepository.findOne({
+    const config = await this.systemConfig.findOne({
       where: { key }
     });
     if (!config) {
@@ -39,18 +36,18 @@ export class SystemConfigsService {
   }
 
   async create(createSystemConfigDto: CreateSystemConfigDto) {
-    const config = this.systemConfigsRepository.create(createSystemConfigDto);
-    return this.systemConfigsRepository.save(config);
+    return this.systemConfig.create(createSystemConfigDto as any);
   }
 
   async update(id: number, updateSystemConfigDto: UpdateSystemConfigDto) {
-    await this.findOne(id);
-    await this.systemConfigsRepository.update(id, updateSystemConfigDto);
-    return this.findOne(id);
+    const config = await this.findOne(id);
+    await config.update(updateSystemConfigDto);
+    return config;
   }
 
   async delete(id: number) {
-    await this.findOne(id);
-    await this.systemConfigsRepository.delete(id);
+    const config = await this.findOne(id);
+    await config.destroy();
+    return config;
   }
 }

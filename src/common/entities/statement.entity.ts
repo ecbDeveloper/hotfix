@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { User } from '../../modules/users/entities/user.entity';
 
 export enum StatementType {
@@ -13,48 +13,79 @@ export enum StatementStatus {
   CANCELLED = 'cancelled',
 }
 
-@Entity('statements')
-export class Statement {
-  @PrimaryGeneratedColumn('uuid')
+@Table({
+  tableName: 'statements',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
+})
+export class Statement extends Model {
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+  })
   id: string;
 
-  @Column({ name: 'user_id' })
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    field: 'user_id'
+  })
   userId: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @BelongsTo(() => User)
   user: User;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column({
+    type: DataType.DECIMAL(10, 2)
+  })
   amount: number;
 
   @Column({
-    type: 'enum',
-    enum: StatementType,
+    type: DataType.ENUM(...Object.values(StatementType))
   })
   type: StatementType;
 
   @Column({
-    type: 'enum',
-    enum: StatementStatus,
+    type: DataType.ENUM(...Object.values(StatementStatus))
   })
   status: StatementStatus;
 
-  @Column()
+  @Column({
+    type: DataType.STRING
+  })
   description: string;
 
-  @Column({ name: 'reference_id', nullable: true })
+  @Column({
+    type: DataType.STRING,
+    field: 'reference_id',
+    allowNull: true
+  })
   referenceId: string;
 
-  @Column({ name: 'reference_type', nullable: true })
+  @Column({
+    type: DataType.STRING,
+    field: 'reference_type',
+    allowNull: true
+  })
   referenceType: string;
 
-  @Column('jsonb', { nullable: true })
+  @Column({
+    type: DataType.JSONB,
+    allowNull: true
+  })
   metadata: Record<string, any>;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({
+    field: 'created_at',
+    type: DataType.DATE
+  })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @Column({
+    field: 'updated_at',
+    type: DataType.DATE
+  })
   updatedAt: Date;
 }

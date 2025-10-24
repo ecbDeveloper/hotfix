@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { StatementsService } from './statements.service';
 import { StatementsController } from './statements.controller';
 import { Statement } from '../../common/entities/statement.entity';
@@ -9,7 +9,7 @@ import { StatementNotificationsService } from './statement-notifications.service
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Statement]),
+    SequelizeModule.forFeature([Statement]),
     AuditModule,
     NotificationsModule,
   ],

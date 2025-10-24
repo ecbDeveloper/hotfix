@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { User } from '../../modules/users/entities/user.entity';
 
 export enum NotificationType {
@@ -12,39 +12,66 @@ export enum NotificationType {
   STATEMENT_DELETED = 'statement_deleted'
 }
 
-@Entity('notifications')
-export class Notification {
-  @PrimaryGeneratedColumn('uuid')
+@Table({
+  tableName: 'notifications',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
+})
+export class Notification extends Model {
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+  })
   id: string;
 
-  @Column({ name: 'user_id' })
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    field: 'user_id'
+  })
   userId: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @BelongsTo(() => User)
   user: User;
 
   @Column({
-    type: 'enum',
-    enum: NotificationType,
+    type: DataType.ENUM(...Object.values(NotificationType))
   })
   type: NotificationType;
 
-  @Column()
+  @Column({
+    type: DataType.STRING
+  })
   title: string;
 
-  @Column('text')
+  @Column({
+    type: DataType.TEXT
+  })
   message: string;
 
-  @Column({ default: false })
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
   read: boolean;
 
-  @Column('jsonb', { nullable: true })
+  @Column({
+    type: DataType.JSONB,
+    allowNull: true
+  })
   metadata: Record<string, any>;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({
+    field: 'created_at',
+    type: DataType.DATE
+  })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @Column({
+    field: 'updated_at',
+    type: DataType.DATE
+  })
   updatedAt: Date;
 }

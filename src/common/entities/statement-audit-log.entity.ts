@@ -1,38 +1,66 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Statement } from './statement.entity';
 import { User } from '../../modules/users/entities/user.entity';
 
-@Entity('statement_audit_logs')
-export class StatementAuditLog {
-  @PrimaryGeneratedColumn('uuid')
+@Table({
+  tableName: 'statement_audit_logs',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: false
+})
+export class StatementAuditLog extends Model {
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+  })
   id: string;
 
-  @Column({ name: 'statement_id' })
+  @ForeignKey(() => Statement)
+  @Column({
+    type: DataType.UUID,
+    field: 'statement_id'
+  })
   statementId: string;
 
-  @ManyToOne(() => Statement)
-  @JoinColumn({ name: 'statement_id' })
+  @BelongsTo(() => Statement)
   statement: Statement;
 
-  @Column({ name: 'user_id', nullable: true })
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    field: 'user_id',
+    allowNull: true
+  })
   userId: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @BelongsTo(() => User)
   user: User;
 
-  @Column()
+  @Column({
+    type: DataType.ENUM('create', 'update', 'delete')
+  })
   action: 'create' | 'update' | 'delete';
 
-  @Column('jsonb')
+  @Column({
+    type: DataType.JSONB
+  })
   oldData: Record<string, any>;
 
-  @Column('jsonb')
+  @Column({
+    type: DataType.JSONB
+  })
   newData: Record<string, any>;
 
-  @Column('text', { nullable: true })
+  @Column({
+    type: DataType.TEXT,
+    allowNull: true
+  })
   reason: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({
+    field: 'created_at',
+    type: DataType.DATE
+  })
   createdAt: Date;
 }

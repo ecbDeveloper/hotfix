@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ReviewRequestModule } from './modules/review-request/review-request.module';
@@ -14,14 +14,14 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { ChatModule } from './modules/chat/chat.module';
-import { typeOrmConfig } from './config/typeorm.config';
+import { databaseConfig } from './config/database.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot(typeOrmConfig),
+    SequelizeModule.forRoot(databaseConfig),
     DatabaseModule,
     UsersModule,
     AuthModule,

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/sequelize';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { Notification } from '../../common/entities/notification.entity';
 import { CreateNotificationDto, UpdateNotificationDto } from './dto';
@@ -8,45 +7,44 @@ import { CreateNotificationDto, UpdateNotificationDto } from './dto';
 @Injectable()
 export class NotificationsService {
   constructor(
-    @InjectRepository(Notification)
-    private notificationsRepository: Repository<Notification>,
+    @InjectModel(Notification)
+    private notification: typeof Notification,
   ) {}
 
   async create(createNotificationDto: CreateNotificationDto): Promise<Notification> {
-    const notification = this.notificationsRepository.create(createNotificationDto);
-    return await this.notificationsRepository.save(notification);
+    return await this.notification.create(createNotificationDto as any);
   }
 
   async findAllForUser(userId: string, paginationQuery: PaginationQueryDto): Promise<[Notification[], number]> {
     const { page = 1, limit = 10 } = paginationQuery;
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    const [notifications, total] = await this.notificationsRepository.findAndCount({
+    const { rows, count } = await this.notification.findAndCountAll({
       where: { userId },
-      order: { createdAt: 'DESC' },
-      skip,
-      take: limit,
+      order: [['createdAt', 'DESC']],
+      offset,
+      limit,
     });
 
-    return [notifications, total];
+    return [rows, count];
   }
 
   async findUnreadForUser(userId: string, paginationQuery: PaginationQueryDto): Promise<[Notification[], number]> {
     const { page = 1, limit = 10 } = paginationQuery;
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    const [notifications, total] = await this.notificationsRepository.findAndCount({
+    const { rows, count } = await this.notification.findAndCountAll({
       where: { userId, read: false },
-      order: { createdAt: 'DESC' },
-      skip,
-      take: limit,
+      order: [['createdAt', 'DESC']],
+      offset,
+      limit,
     });
 
-    return [notifications, total];
+    return [rows, count];
   }
 
   async findOne(id: string): Promise<Notification> {
-    const notification = await this.notificationsRepository.findOne({ where: { id } });
+    const notification = await this.notification.findByPk(id);
     if (!notification) {
       throw new NotFoundException('Notification not found');
     }
@@ -54,29 +52,24 @@ export class NotificationsService {
   }
 
   async markAsRead(id: string): Promise<void> {
-    await this.notificationsRepository.update(id, { read: true });
+    const notification = await this.findOne(id);
+    await notification.update({ read: true });
   }
 
   async markAllAsRead(userId: string): Promise<void> {
-    await this.notificationsRepository.update(
-      { userId, read: false },
-      { read: true }
+    await this.notification.update(
+      { read: true },
+      { where: { userId, read: false } }
     );
   }
 
   async update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<void> {
-    const notification = await this.notificationsRepository.findOne({ where: { id } });
-    if (!notification) {
-      throw new NotFoundException('Notification not found');
-    }
-    await this.notificationsRepository.update(id, updateNotificationDto);
+    const notification = await this.findOne(id);
+    await notification.update(updateNotificationDto);
   }
 
   async remove(id: string): Promise<void> {
-    const notification = await this.notificationsRepository.findOne({ where: { id } });
-    if (!notification) {
-      throw new NotFoundException('Notification not found');
-    }
-    await this.notificationsRepository.delete(id);
+    const notification = await this.findOne(id);
+    await notification.destroy();
   }
 }

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/sequelize';
 import { Statement } from '../../common/entities/statement.entity';
 import { CreateStatementDto } from './dto/create-statement.dto';
 import { UpdateStatementDto } from './dto/update-statement.dto';
@@ -9,14 +8,13 @@ import { StatementNotificationsService } from './statement-notifications.service
 @Injectable()
 export class StatementsService {
   constructor(
-    @InjectRepository(Statement)
-    private readonly statementsRepository: Repository<Statement>,
+    @InjectModel(Statement)
+    private readonly statement: typeof Statement,
     private readonly notificationsService: StatementNotificationsService,
   ) {}
 
   async create(createStatementDto: CreateStatementDto) {
-    const statement = this.statementsRepository.create(createStatementDto);
-    await this.statementsRepository.save(statement);
+    const statement = await this.statement.create(createStatementDto as any);
 
     await this.notificationsService.notifyStatementCreated(
       statement.userId,
@@ -31,16 +29,14 @@ export class StatementsService {
   }
 
   async findAll(userId?: string) {
-    return this.statementsRepository.find({
+    return this.statement.findAll({
       where: userId ? { userId } : {},
-      order: { createdAt: 'DESC' }
+      order: [['createdAt', 'DESC']]
     });
   }
 
   async findOne(id: string) {
-    const statement = await this.statementsRepository.findOne({
-      where: { id }
-    });
+    const statement = await this.statement.findByPk(id);
     if (!statement) {
       throw new NotFoundException(`Statement with ID ${id} not found`);
     }
@@ -49,7 +45,7 @@ export class StatementsService {
 
   async update(id: string, updateStatementDto: UpdateStatementDto) {
     const statement = await this.findOne(id);
-    await this.statementsRepository.update(id, updateStatementDto);
+    await statement.update(updateStatementDto);
     
     await this.notificationsService.notifyStatementUpdated(
       statement.userId,
@@ -60,12 +56,12 @@ export class StatementsService {
       }
     );
 
-    return this.findOne(id);
+    return statement;
   }
 
   async remove(id: string) {
     const statement = await this.findOne(id);
-    await this.statementsRepository.remove(statement);
+    await statement.destroy();
 
     await this.notificationsService.notifyStatementDeleted(
       statement.userId,
@@ -78,12 +74,12 @@ export class StatementsService {
   }
 
   async delete(id: string) {
-    await this.findOne(id);
-    await this.statementsRepository.delete(id);
+    const statement = await this.findOne(id);
+    await statement.destroy();
   }
 
   async getUserBalance(userId: string) {
-    const statements = await this.statementsRepository.find({
+    const statements = await this.statement.findAll({
       where: { userId }
     });
     

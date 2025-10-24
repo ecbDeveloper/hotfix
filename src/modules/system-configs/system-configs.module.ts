@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { SystemConfigsService } from './system-configs.service';
 import { SystemConfigsController } from './system-configs.controller';
 import { SystemConfig } from '../../common/entities/system-config.entity';
@@ -8,7 +8,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SystemConfig]),
+    SequelizeModule.forFeature([SystemConfig]),
     CacheModule.registerAsync({
       useFactory: () => ({
         ttl: 300000, // 5 minutes in milliseconds

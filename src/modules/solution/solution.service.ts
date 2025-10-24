@@ -9,7 +9,7 @@ import { AcceptReviewService } from '../accept-review/accept-review.service';
 import { ReviewRequestService } from '../review-request/review-request.service';
 import { ReviewRequestStatus } from '../review-request/entities/review-request.entity';
 import { UpdateAcceptReviewDto } from '../accept-review/dto/update-accept-review.dto';
-import { AcceptSolutionDto } from './dto/accept-solutin.dot';
+import { AcceptSolutionDto } from './dto/accept-solution.dto';
 
 @Injectable()
 export class SolutionService {

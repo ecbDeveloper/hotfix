@@ -1,25 +1,52 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@Entity('system_configs')
-export class SystemConfig {
-  @PrimaryGeneratedColumn()
+@Table({
+  tableName: 'system_configs',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
+})
+export class SystemConfig extends Model {
+  @Column({
+    type: DataType.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  })
   id: number;
 
-  @Column({ unique: true })
+  @Column({
+    type: DataType.STRING,
+    unique: true,
+  })
   key: string;
 
-  @Column('text')
+  @Column({
+    type: DataType.TEXT
+  })
   value: string;
 
-  @Column('text', { nullable: true })
+  @Column({
+    type: DataType.TEXT,
+    allowNull: true
+  })
   description: string;
 
-  @Column({ name: 'is_public', default: false })
+  @Column({
+    field: 'is_public',
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
   isPublic: boolean;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({
+    field: 'created_at',
+    type: DataType.DATE
+  })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @Column({
+    field: 'updated_at',
+    type: DataType.DATE
+  })
   updatedAt: Date;
 }

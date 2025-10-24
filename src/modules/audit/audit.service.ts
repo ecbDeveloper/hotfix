@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/sequelize';
 import { StatementAuditLog } from '../../common/entities/statement-audit-log.entity';
 
 export type AuditAction = 'create' | 'update' | 'delete';
@@ -17,28 +16,27 @@ export interface CreateAuditLogDto {
 @Injectable()
 export class AuditService {
   constructor(
-    @InjectRepository(StatementAuditLog)
-    private auditLogRepository: Repository<StatementAuditLog>,
+    @InjectModel(StatementAuditLog)
+    private auditLog: typeof StatementAuditLog,
   ) {}
 
   async logStatementChange(createAuditLogDto: CreateAuditLogDto): Promise<void> {
-    const auditLog = this.auditLogRepository.create(createAuditLogDto);
-    await this.auditLogRepository.save(auditLog);
+    await this.auditLog.create(createAuditLogDto as any);
   }
 
   async getStatementHistory(statementId: string): Promise<StatementAuditLog[]> {
-    return await this.auditLogRepository.find({
+    return await this.auditLog.findAll({
       where: { statementId },
-      relations: ['user'],
-      order: { createdAt: 'DESC' }
+      include: ['user'],
+      order: [['createdAt', 'DESC']]
     });
   }
 
   async getUserAuditHistory(userId: string): Promise<StatementAuditLog[]> {
-    return await this.auditLogRepository.find({
+    return await this.auditLog.findAll({
       where: { userId },
-      relations: ['user'],
-      order: { createdAt: 'DESC' }
+      include: ['user'],
+      order: [['createdAt', 'DESC']]
     });
   }
 }
