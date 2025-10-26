@@ -1,67 +1,81 @@
-import { Controller, Post, Body, UseGuards, Get, Query, Res, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import type { ReviewRequest } from './entities/review-request.entity';
 import { ReviewRequestService } from './review-request.service';
 import { CreateReviewRequestDto } from './dto/create-review-request.dto';
-import { CurrentUser } from '../auth/decorator/current-user.decorator';
-import { User } from '../users/entities/user.entity';
-import { JwtAuthGuard } from '../auth/guard/auth.guard';
-import { ApiOkResponse, ApiQuery } from '@nestjs/swagger';
+import { ReviewRequestDto } from './dto/review-request.dto.js';
 import { DefaultResponse } from 'src/common/dto/default-response.dto';
-import { ApiPaginatedResponse } from 'src/common/decorators/paginated-response.decorator';
-import { ReviewRequestDto } from './dto/response-review-request.dto';
-import type { Response } from 'express';
+import { User } from '../users/entities/user.entity';
+import { CurrentUser } from '../auth/decorator/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
 
 @Controller('review-requests')
+@ApiTags('Review Requests')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class ReviewRequestController {
-  constructor(private readonly reviewRequestService: ReviewRequestService) { }
+  constructor(
+    private readonly reviewRequestService: ReviewRequestService
+  ) { }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiOkResponse({
-    type: DefaultResponse
+  @ApiCreatedResponse({
+    type: DefaultResponse,
+    description: 'Create a new review request'
   })
-  create(@Body() createReviewRequestDto: CreateReviewRequestDto, @CurrentUser() user: User) {
-    return this.reviewRequestService.create({
-      ...createReviewRequestDto,
-      userId: user.id,
-    });
+  async create(
+    @Body() createReviewRequestDto: CreateReviewRequestDto,
+    @CurrentUser() user: User,
+  ): Promise<DefaultResponse> {
+    return await this.reviewRequestService.create(createReviewRequestDto, user);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
-  @ApiPaginatedResponse(ReviewRequestDto)
-  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
-  @ApiQuery({ name: 'offset', required: false, type: Number, example: 0 })
-  async findAllByUserId(
-    @Query('limit') limit = 10,
-    @Query('offset') offset = 0,
-    @CurrentUser() user: User,
-    @Res() res: Response
-  ) {
-    const userReviewRequests = await this.reviewRequestService.findAllByUserId(user.id, limit, offset)
-
-    return res.status(200).json(userReviewRequests)
+  @ApiOkResponse({
+    type: PaginatedDto,
+    description: 'List all review requests with pagination'
+  })
+  async findAll(
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number
+  ): Promise<PaginatedDto<ReviewRequestDto>> {
+    return await this.reviewRequestService.findAll(limit, offset);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Get('by-user')
+  @ApiOkResponse({
+    type: PaginatedDto,
+    description: 'List review requests by current user with pagination'
+  })
+  async findByUser(
+    @CurrentUser() user: User,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number
+  ): Promise<PaginatedDto<ReviewRequestDto>> {
+    return await this.reviewRequestService.findByUser(user.id, limit, offset);
+  }
+
   @Get(':id')
-  @ApiOkResponse({ type: ReviewRequestDto })
-  async findOne(
-    @Param('id') id: string,
-    @Res() res: Response,
-  ) {
-    const reviewRequest = await this.reviewRequestService.findOneById(id);
-    return res.status(200).json(reviewRequest);
+  @ApiOkResponse({
+    type: ReviewRequestDto,
+    description: 'Get review request by ID'
+  })
+  @ApiParam({ name: 'id', description: 'Review request ID' })
+  async findOne(@Param('id') id: string): Promise<ReviewRequest | null> {
+    return await this.reviewRequestService.findOneById(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async delete(
+  @ApiOkResponse({
+    type: DefaultResponse,
+    description: 'Cancel review request'
+  })
+  @ApiParam({ name: 'id', description: 'Review request ID' })
+  async remove(
     @Param('id') id: string,
-    @CurrentUser() user: User,
-    @Res() res: Response
-  ) {
-    const response = await this.reviewRequestService.checkOwnerAndCancel(id, user.id)
-
-    return res.status(200).json(response)
+    @CurrentUser() user: User
+  ): Promise<DefaultResponse> {
+    return await this.reviewRequestService.checkOwnerAndCancel(id, user.id);
   }
 }
