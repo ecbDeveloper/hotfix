@@ -38,4 +38,14 @@ export class SolutionRepository {
       where: { id: solutionId },
     })
   }
+
+  async findOneByReview(reviewId: string) {
+    const acceptReview = await Solution.findOne({
+      include: [{
+        association: 'acceptReview',
+        where: { reviewId }
+      }]
+    });
+    return acceptReview;
+  }
 }

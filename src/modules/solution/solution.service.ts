@@ -109,4 +109,9 @@ export class SolutionService {
 
     return solution
   }
+
+  async findOneByReview(reviewId: string) {
+    const solution = await this.solutionRepository.findOneByReview(reviewId);
+    return solution;
+  }
 }

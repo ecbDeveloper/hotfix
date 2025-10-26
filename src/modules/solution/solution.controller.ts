@@ -63,8 +63,6 @@ export class SolutionController {
     return await this.solutionsService.updateSolution(updateSolutiondDto.solution, solutionId, user.id);
   }
 
-<<<<<<< HEAD
-=======
   @Get('by-review/:reviewId')
   @ApiOkResponse({
     type: SolutionDto,
@@ -77,7 +75,6 @@ export class SolutionController {
     return await this.solutionsService.findOneByReview(reviewId);
   }
 
->>>>>>> EikeBranch
   @Get(':id')
   @ApiOkResponse({ 
     type: SolutionDto,
