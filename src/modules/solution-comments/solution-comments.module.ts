@@ -5,8 +5,8 @@ import { SolutionCommentsRepository } from './solution-comments.repository';
 import { SolutionModule } from '../solution/solution.module';
 
 @Module({
-  controllers: [SolutionCommentsController],
-  providers: [SolutionCommentsService, SolutionCommentsRepository],
-  exports: [SolutionModule]
+	controllers: [SolutionCommentsController],
+	providers: [SolutionCommentsService, SolutionCommentsRepository],
+	exports: [SolutionModule]
 })
-export class CommentsModule { }
+export class SolutionCommentsModule { }

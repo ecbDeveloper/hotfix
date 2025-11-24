@@ -4,9 +4,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ReviewRequestModule } from './modules/review-request/review-request.module';
 import { AcceptReviewModule } from './modules/accept-review/accept-review.module';
 import { SolutionModule } from './modules/solution/solution.module';
-import { CommentsModule } from './modules/comments/comments.module';
+import { SolutionComment } from './modules/solution-comments/entities/solution-comment.entity';
 
 @Module({
-  imports: [UsersModule, AuthModule, ReviewRequestModule, AcceptReviewModule, SolutionModule, CommentsModule],
+	imports: [UsersModule, AuthModule, ReviewRequestModule, AcceptReviewModule, SolutionModule, SolutionComment],
 })
 export class AppModule { }
