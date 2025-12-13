@@ -4,9 +4,34 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ReviewRequestModule } from './modules/review-request/review-request.module';
 import { AcceptReviewModule } from './modules/accept-review/accept-review.module';
 import { SolutionModule } from './modules/solution/solution.module';
-import { SolutionComment } from './modules/solution-comments/entities/solution-comment.entity';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { SolutionCommentsModule } from './modules/solution-comments/solution-comments.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-	imports: [UsersModule, AuthModule, ReviewRequestModule, AcceptReviewModule, SolutionModule, SolutionComment],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    SequelizeModule.forRoot({
+      dialect: 'postgres',
+      database: process.env.DB_NAME,
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      autoLoadModels: true,
+      define: {
+        underscored: true,
+      },
+    }),
+    UsersModule,
+    AuthModule,
+    ReviewRequestModule,
+    AcceptReviewModule,
+    SolutionModule,
+    SolutionCommentsModule
+  ],
 })
 export class AppModule { }
