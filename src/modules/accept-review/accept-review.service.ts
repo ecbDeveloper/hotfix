@@ -114,7 +114,14 @@ export class AcceptReviewService {
 
   async findAllPending(reviewId: string, userId: string) {
     const reviewRequest = await this.reviewRequestsService.findOneById(reviewId)
-    if (reviewRequest.status >= ReviewRequestStatus.IN_PROGRESS) {
+
+    const blockedStatuses = [
+      ReviewRequestStatus.CANCELLED,
+      ReviewRequestStatus.DONE,
+      ReviewRequestStatus.IN_PROGRESS,
+    ];
+
+    if (blockedStatuses.includes(reviewRequest.status)) {
       throw new UnprocessableEntityException('The review need to be open, to see all accepts reviews')
     }
 

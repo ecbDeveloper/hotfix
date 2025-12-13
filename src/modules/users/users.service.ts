@@ -71,7 +71,7 @@ export class UsersService {
     const { total, results } = await this.usersRepository.findAll(limit, offset)
 
 
-    const resultsTyped = results as unknown as UserWithLanguages[];
+    const resultsTyped = results as UserWithLanguages[];
 
     return {
       limit,
