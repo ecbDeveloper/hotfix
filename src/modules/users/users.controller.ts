@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guard/auth.guard';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
@@ -16,27 +16,24 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: UserResponseDto
   })
-  async getUserFromToken(@CurrentUser() user: User, @Res() res: Response) {
-    const response = await this.usersService.findOneById(user.id)
-
-    return res.status(200).json(response)
+  async getUserFromToken(@CurrentUser() user: User) {
+    return await this.usersService.findOneById(user.id)
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiPaginatedResponse(UserResponseDto)
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   @ApiQuery({ name: 'offset', required: false, type: Number, example: 0 })
   async findAllUsers(
     @Query('limit') limit = 10,
     @Query('offset') offset = 0,
-    @Res() res: Response
   ) {
-    const users = await this.usersService.findAll(limit, offset)
-
-    return res.status(200).json(users)
+    return await this.usersService.findAll(limit, offset)
   }
 
   @UseGuards(JwtAuthGuard)
