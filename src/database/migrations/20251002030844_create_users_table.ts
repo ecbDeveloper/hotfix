@@ -9,11 +9,17 @@ export async function up(knex: Knex): Promise<void> {
     table.string('password').notNullable();
     table.integer('role_id').notNullable().unsigned();
     table.boolean('active').notNullable().defaultTo(true);
-    table.integer('dev_status_id').unsigned()
+    table.integer('dev_status_id').unsigned();
     table.timestamps(true, true);
 
-    table.foreign('role_id').references('roles.id')
-    table.foreign('dev_status_id').references('dev_statuses.id')
+    table.foreign('role_id')
+      .references('roles.id')
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE');
+    table.foreign('dev_status_id')
+      .references('dev_statuses.id')
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE');
   });
 }
 

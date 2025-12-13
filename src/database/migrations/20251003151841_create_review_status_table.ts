@@ -6,14 +6,6 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id').primary();
     table.string('description').notNullable().unique();
   });
-
-  await knex('review_statuses').insert([
-    { description: 'Open' },
-    { description: 'In Progress' },
-    { description: 'Done' },
-    { description: 'Cancelled' },
-  ]);
-
 }
 
 

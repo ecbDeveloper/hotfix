@@ -3,19 +3,25 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('solution_comments', (table) => {
-    table.uuid('id').primary()
-    table.uuid('solution_id').notNullable()
-    table.uuid('user_id').notNullable()
-    table.text('comment').notNullable()
+    table.uuid('id').primary();
+    table.uuid('solution_id').notNullable();
+    table.uuid('user_id').notNullable();
+    table.text('comment').notNullable();
     table.timestamps(true, true);
 
-    table.foreign('solution_id').references('solutions.id')
-    table.foreign('user_id').references('users.id')
+    table.foreign('solution_id')
+      .references('solutions.id')
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE');
+    table.foreign('user_id')
+      .references('users.id')
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE');
   })
 }
 
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTableIfExists('solution_comments')
+  await knex.schema.dropTableIfExists('solution_comments');
 }
 
