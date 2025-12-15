@@ -13,7 +13,6 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-
     SequelizeModule.forRoot({
       dialect: 'postgres',
       database: process.env.DB_NAME,
