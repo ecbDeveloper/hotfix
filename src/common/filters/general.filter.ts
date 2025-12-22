@@ -22,7 +22,9 @@ export class GeneralExceptionFilter implements ExceptionFilter {
         message = exceptionResponse;
       }
       else if (Array.isArray(exceptionResponse.message)) {
-        message = exceptionResponse.message[0];
+        message = exceptionResponse.message.length > 1
+          ? exceptionResponse.message.join(', ')
+          : exceptionResponse.message[0]
       }
       else {
         message = exceptionResponse.message;
