@@ -38,7 +38,7 @@ export class GeneralExceptionFilter implements ExceptionFilter {
           url: request.url,
           statusCode
         },
-        `Erro na requisicao HTTP  `,
+        `Erro na requisicao HTTP ${request.url}`,
       )
 
       return response.status(statusCode).json(new ApiResponseDto(statusCode, false, null, message));
@@ -53,7 +53,7 @@ export class GeneralExceptionFilter implements ExceptionFilter {
         url: request.url,
         statusCode,
       },
-      'Erro desconhecido'
+      `Erro desconhecido ${request.url}`
     );
 
     return response.status(statusCode).json(new ApiResponseDto(statusCode, false, null, 'Erro Interno no Servidor'))
