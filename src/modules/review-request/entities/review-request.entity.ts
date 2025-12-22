@@ -96,7 +96,4 @@ export class ReviewRequest extends Model<ReviewRequestAttributes, ReviewRequestC
 
   @HasMany(() => AcceptReview)
   acceptedBy: AcceptReview[];
-
-  @HasOne(() => Solution)
-  solution: Solution;
 }
