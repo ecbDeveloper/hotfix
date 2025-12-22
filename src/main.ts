@@ -1,10 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { GeneralExceptionFilter } from './common/filters/general.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new ConsoleLogger({
+      json: true,
+    })
+  });
 
   const config = new DocumentBuilder()
     .setTitle('HotFix')
@@ -21,6 +27,8 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, docomentFactory)
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalFilters(new GeneralExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3030);
 
