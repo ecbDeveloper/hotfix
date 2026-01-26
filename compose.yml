@@ -1,16 +1,15 @@
 services:
   db:
     container_name: hotfix_db
+    restart: unless-stopped
     image: postgres:16
     ports:
-      - 5431:5432
+      - ${DB_PORT}:5432
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: hotfix_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    restart: unless-stopped
-
 volumes:
   pgdata:
