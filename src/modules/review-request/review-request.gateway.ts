@@ -85,7 +85,7 @@ export class ReviewRequestGateway implements OnGatewayConnection, OnGatewayDisco
     if (socketClient) {
       this.server.to(socketClient).emit(event, payload);
     } else {
-      console.log(`Usuário ${toUserId} não está conectado`);
+      console.log(`User ${toUserId} isn't connected`);
     }
   }
 } 
