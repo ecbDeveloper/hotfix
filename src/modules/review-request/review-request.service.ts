@@ -23,14 +23,8 @@ export class ReviewRequestService {
       throw new NotFoundException('User not found')
     }
 
-    const userHasReviewInProgress = await this.reviewResquestRepository.findReviewRequestInProgressByUser(createReviewRequestDto.userId)
-    if (userHasReviewInProgress) {
-      throw new ConflictException('You already have a review in progess')
-    }
-
     const reviewId = await this.reviewResquestRepository.create(createReviewRequestDto)
 
-    await this.reviewRequestGateway.addToSomeRoom(user.id, 'accept-room')
     this.reviewRequestGateway.broadcastToRoom('work-room', 'new-review-request', createReviewRequestDto)
 
     return {

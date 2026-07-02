@@ -69,14 +69,13 @@ export class AcceptReviewService {
 
     if (updateAcceptReview.acceptReviewStatus === AcceptReviewStatuses.ACCEPTED) {
       await this.acceptReviewsRepository.rejectAllPending(updateAcceptReview.reviewId)
+      this.reviewRequestsGateway.broadcastToRoom('work-room', 'review-request-removed', review.id)
     }
-
-    this.reviewRequestsGateway.broadcastToRoom('work-room', 'new-review-request', review)
 
     return {
       devId: updateAcceptReview.devId,
       reviewId: updateAcceptReview.reviewId,
-      message: 'accept review cancelled successfully'
+      message: `Accept review ${updateAcceptReview.acceptReviewStatus === AcceptReviewStatuses.ACCEPTED ? 'accepted' : 'rejected'} successfully`
     }
   }
 
